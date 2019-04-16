@@ -1,7 +1,5 @@
 #include <Arduino.h>
-#include <U8g2lib.h>
 
-#ifndef _U8G2LIB_HH
 
 #include "../libraries/U8g2/src/U8g2lib.h"
 
