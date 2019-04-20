@@ -1,7 +1,0 @@
-C:/Users/Admin/Documents/Arduino/SmartCharger/cmake-build-debug/CMakeFiles/uno_CORE.dir
-C:/Users/Admin/Documents/Arduino/SmartCharger/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-C:/Users/Admin/Documents/Arduino/SmartCharger/cmake-build-debug/CMakeFiles/uno_Wire.dir
-C:/Users/Admin/Documents/Arduino/SmartCharger/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Admin/Documents/Arduino/SmartCharger/cmake-build-debug/CMakeFiles/SmartCharger.dir
-C:/Users/Admin/Documents/Arduino/SmartCharger/cmake-build-debug/CMakeFiles/uno_twi.dir
-C:/Users/Admin/Documents/Arduino/SmartCharger/cmake-build-debug/CMakeFiles/SmartCharger-size.dir
