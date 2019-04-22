@@ -177,10 +177,12 @@ void loop() {
 
 
         String dspVoltage = String(F("V: "));
-        dspVoltage += showVoltage / indexShow;
+//        dspVoltage += showVoltage / indexShow;
+        dspVoltage += voltage * 0.01;
 
         String dspAmperage = String(F("A: "));
-        dspAmperage += showAmprage / indexShow;
+//        dspAmperage += showAmprage / indexShow;
+        dspAmperage += amperage * 0.001;
 
         u8g2.clearBuffer();                    // clear the internal memory
         u8g2.setCursor(2, 32);
@@ -192,10 +194,10 @@ void loop() {
         u8g2.sendBuffer();
         indexShow++;
 
-        if (indexShow > 60) {
-            showVoltage = (showVoltage / indexShow) * 20;
-            showAmprage = (showAmprage / indexShow) * 20;
-            indexShow = 20;
+        if (indexShow > 10) {
+            showVoltage = (showVoltage / indexShow) * 2;
+            showAmprage = (showAmprage / indexShow) * 2;
+            indexShow = 2;
         }
 
     }
