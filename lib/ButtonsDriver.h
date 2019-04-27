@@ -18,6 +18,11 @@
 #endif
 
 
+#ifndef BTN_BOUNCE_TIME
+#define BTN_BOUNCE_TIME 350
+#endif
+
+
 struct Button {
     uint8_t pin; // Pin to listen
     uint8_t state; // State to listen
@@ -30,15 +35,17 @@ class ButtonsDriver {
 private:
     boolean isPressed;
     volatile uint8_t offset;
-    uint8_t btnLen = 0;
+    uint8_t btnLen = 0, lastPressed;
     unsigned long *triggerTime;
+    unsigned long lastInteraction = 0;
     Button container[BTN_MAX], pressed[BTN_TOGETHER_MAX];
 
     boolean isPress(uint16_t time, uint8_t index) {
         if (triggerTime[index] == 0) {
             triggerTime[index] = millis();
         }
-        return (millis() - triggerTime[index]) > time ? true : false;
+        unsigned long timer = millis() - triggerTime[index];
+        return timer > time ? true : false;
 
     }
 
@@ -70,7 +77,8 @@ public:
 
     boolean is(Button btn) {
         for (offset = 0; offset < BTN_TOGETHER_MAX; ++offset) {
-            if (this->pressed[offset].pin == btn.pin) {
+            if (this->pressed[offset].pin == btn.pin && lastPressed != btn.pin) {
+                lastPressed = btn.pin;
                 return true;
             }
         }
@@ -79,19 +87,25 @@ public:
 
 
     void listen(void) {
-        uint8_t btnOffset = 0;
+        uint8_t prsOff = 0;
+        if (millis() > lastInteraction + BTN_BOUNCE_TIME) {
+            lastPressed = '\0';
+            lastInteraction = millis();
+        }
         for (offset = 0; offset < btnLen; ++offset) {
+            this->pressed[offset] = {};
             if (digitalRead(container[offset].pin) == container[offset].state) {
-                if (isPress(container[offset].time, btnOffset)) {
+                if (isPress(container[offset].time, prsOff)) {
                     this->isPressed = true;
-                    pressed[btnOffset] = container[offset];
+                    pressed[prsOff] = container[offset];
+                    lastInteraction = millis();
                 }
-                btnOffset++;
+                prsOff++;
             }
 
             //
             // Stops when reach limit
-            if (btnOffset > BTN_TOGETHER_MAX) {
+            if (prsOff > BTN_TOGETHER_MAX) {
                 return;
             }
         }

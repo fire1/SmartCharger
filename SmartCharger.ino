@@ -47,7 +47,7 @@ static void encoder();
 static void timers();
 
 ButtonsDriver btn;
-Button btnSet = {encoderPinC, LOW, 50};
+Button btnSet = {encoderPinC, LOW, 200};
 
 void setup() {
     timers();
