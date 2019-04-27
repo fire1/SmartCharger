@@ -5,8 +5,7 @@
 #ifndef ARDUINO_MID_MENU_BTN_H
 #define ARDUINO_MID_MENU_BTN_H
 
-#include <Arduino.h>
-
+#include <Arduino.h>"
 
 //#define BUTTONS_DEBUG
 
@@ -20,19 +19,19 @@
 
 
 struct Button {
-    const uint8_t pin; // Pin to listen
-    const uint8_t state; // State to listen
-    const uint16_t time; // Time pressed in m
+    uint8_t pin; // Pin to listen
+    uint8_t state; // State to listen
+    uint16_t time; // Time pressed in m
 };
 
 typedef void (*btn_press)(Button);
 
-class ButtonDriver {
+class ButtonsDriver {
 private:
     boolean isPressed;
     volatile uint8_t offset;
     uint8_t btnLen = 0;
-    unsigned long triggerTime[BTN_TOGETHER_MAX];
+    unsigned long *triggerTime;
     Button container[BTN_MAX], pressed[BTN_TOGETHER_MAX];
 
     boolean isPress(uint16_t time, uint8_t index) {
@@ -46,11 +45,13 @@ private:
 
 public:
 
-    ButtonDriver() {
+    ButtonsDriver() {
     }
 
     void set(Button btn) {
         this->container[btnLen++] = btn;
+        pinMode(btn.pin, INPUT);
+        digitalWrite(btn.pin, btn.state == HIGH ? LOW : HIGH);
     }
 
     boolean click() {
@@ -78,18 +79,19 @@ public:
 
 
     void listen(void) {
-        uint8_t timeIndex = 0;
+        uint8_t btnOffset = 0;
         for (offset = 0; offset < btnLen; ++offset) {
             if (digitalRead(container[offset].pin) == container[offset].state) {
-                if (isPress(container[offset].time, timeIndex++)) {
+                if (isPress(container[offset].time, btnOffset)) {
                     this->isPressed = true;
-                    pressed[timeIndex] = container[offset];
+                    pressed[btnOffset] = container[offset];
                 }
+                btnOffset++;
             }
 
             //
             // Stops when reach limit
-            if (timeIndex > BTN_TOGETHER_MAX) {
+            if (btnOffset > BTN_TOGETHER_MAX) {
                 return;
             }
         }
