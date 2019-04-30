@@ -2,10 +2,10 @@
 // Created by Angel Zaprianov on 14.2.2017 г..
 //
 
-#ifndef ARDUINO_MID_MENU_BTN_H
-#define ARDUINO_MID_MENU_BTN_H
+#ifndef BTN_DRIVER_H
+#define BTN_DRIVER_H
 
-#include <Arduino.h>"
+#include <Arduino.h>
 
 //#define BUTTONS_DEBUG
 

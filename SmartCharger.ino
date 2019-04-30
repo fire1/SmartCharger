@@ -8,9 +8,14 @@
 #endif
 
 
-#include <Wire.h>
 #define BTN_MAX 1
+
+#include <Wire.h>
+
 #include "lib/ButtonsDriver.h"
+#include "lib/MenuStructure.h"
+#include "lan/en.h"
+#include "lib/Language.h"
 
 U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 
@@ -141,11 +146,11 @@ void loop() {
         showAmperage = amperage * 0.001 + showAmperage;
 
 
-        String dspVoltage = String(F("V: "));
+        String dspVoltage = String(msg(6));
 //        dspVoltage += showVoltage / indexShow;
         dspVoltage += voltage * 0.01;
 
-        String dspAmperage = String(F("A: "));
+        String dspAmperage = String(msg(7));
 //        dspAmperage += showAmperage / indexShow;
         dspAmperage += amperage * 0.001;
 
