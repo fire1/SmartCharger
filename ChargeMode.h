@@ -8,12 +8,12 @@
 #include <Arduino.h>
 
 struct chargeMode {
-    uint8_t* maxTime = 0;
-    uint8_t* setVolt = 0;
-    uint8_t* setLoad = 0;
-    uint8_t* maxVolt = 0;
-    uint8_t* maxLoad = 0;
-    uint8_t* pgmName = 0; // index of PROGMEM name
+    uint8_t maxTime = 0;
+    uint8_t setVolt = 0;
+    uint8_t setLoad = 0;
+    uint8_t maxVolt = 0;
+    uint8_t maxLoad = 0;
+    uint8_t pgmName = 0; // index of PROGMEM name
 };
 
 //const struct  chargeMode ch_mode  PROGMEM = {maxTime:1, setVolt:36, setLoad: 255, maxVolt: 36, maxLoad:  200, pgmName: 15};

@@ -6,7 +6,7 @@
 #define SmartCharger_h
 
 #include <Arduino.h>
-#include "ChargeMode.h"
+#include "../ChargeMode.h"
 
 #ifndef PIN_INP_AMP
 #define  PIN_INP_AMP A0
@@ -45,6 +45,21 @@ private:
     unsigned long readContainerVlt, readContainerAmp;
     uiData data;
     chargeMode *mode;
+
+/**
+ *
+ */
+    void timers() {
+        TCCR2B = TCCR2B & B11111000 | B00000001; // D3 for PWM frequency of 31372.55 Hz
+//    TCCR1B = TCCR1B & B11111000 | B00000001; // D9 & D10: set timer 1 divisor to 1 for PWM frequency of 31372.55 Hz
+//    TCCR1B = TCCR1B & B11111000 | B00000010; // for PWM frequency of 3921.16 Hz
+        TCCR2B = TCCR2B & B11111000 | B00000011; // for PWM frequency of 980.39 Hz
+//    TCCR2B = TCCR2B & B11111000 | B00000100; // for PWM frequency of 490.20 Hz (The DEFAULT)
+//    TCCR2B = TCCR2B & B11111000 | B00000101; // for PWM frequency of 245.10 Hz
+//    TCCR2B = TCCR2B & B11111000 | B00000110; // for PWM frequency of 122.55 Hz
+//    TCCR2B = TCCR2B & B11111000 | B00000111; // for PWM frequency of 30.64 Hz
+    }
+
 
     void measure() {
 
@@ -103,28 +118,31 @@ private:
 
 public:
 
-    void SmartCharger() {
+    SmartCharger() {
 
     }
 
     void begin() {
+        timers();
         pinMode(PIN_PSV_PWM, OUTPUT);
         pinMode(PIN_GND_PWM, OUTPUT);
 
         pinMode(PIN_LOAD, INPUT_PULLUP);
         pinMode(PIN_VOLT, INPUT_PULLUP);
+
+        digitalWrite(PIN_LOAD, HIGH);
     }
 
 /**
  *
  * @param mode
  */
-    void setMode(chargeMode mode) {
-        this->mode = &mode;
+    void setMode(chargeMode *mode) {
+        this->mode = mode;
     }
 
-    void charge(uint16_t charge) {
-        calculate(charge);
+    void charge(uint16_t offset) {
+        calculate(offset);
         control();
         measure();
     }

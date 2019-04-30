@@ -36,6 +36,8 @@ private:
     boolean isPressed;
     volatile uint8_t offset;
     uint8_t btnLen = 0, lastPressed;
+    uint8_t pinStateEncoder;
+    uint8_t encoderPinA, encoderPinB, encoderPinALast, encoderPosition, encoderPositionLast, encoderSteps = 1;
     unsigned long *triggerTime;
     unsigned long lastInteraction = 0;
     Button container[BTN_MAX], pressed[BTN_TOGETHER_MAX];
@@ -49,44 +51,19 @@ private:
 
     }
 
-
-public:
-
-    ButtonsDriver() {
-    }
-
-    void set(Button btn) {
-        this->container[btnLen++] = btn;
-        pinMode(btn.pin, INPUT);
-        digitalWrite(btn.pin, btn.state == HIGH ? LOW : HIGH);
-    }
-
-    boolean click() {
-        boolean state = this->isPressed;
-        isPressed = false;
-        return state;
-    }
-
-    boolean click(Button btn) {
-        if (this->isPressed) {
-            isPressed = false;
-            return this->is(btn);
-        }
-        return false;
-    }
-
-    boolean is(Button btn) {
-        for (offset = 0; offset < BTN_TOGETHER_MAX; ++offset) {
-            if (this->pressed[offset].pin == btn.pin && lastPressed != btn.pin) {
-                lastPressed = btn.pin;
-                return true;
+    void encoder() {
+        pinStateEncoder = (uint8_t) digitalRead(encoderPinA);
+        if ((encoderPinALast == LOW) && (pinStateEncoder == HIGH)) {
+            if (digitalRead(encoderPinB) == LOW) {
+                encoderPosition = encoderPosition - encoderSteps;
+            } else {
+                encoderPosition = encoderPosition + encoderSteps;
             }
         }
-        return false;
+        encoderPinALast = pinStateEncoder;
     }
 
-
-    void listen(void) {
+    void buttons() {
         uint8_t prsOff = 0;
         if (millis() > lastInteraction + BTN_BOUNCE_TIME) {
             lastPressed = '\0';
@@ -111,7 +88,107 @@ public:
         }
     }
 
-    void begin() {
+public:
+
+    ButtonsDriver() {
+    }
+
+/**
+ *
+ * @param btn
+ */
+    void set(Button btn) {
+        this->container[btnLen++] = btn;
+        pinMode(btn.pin, INPUT);
+        digitalWrite(btn.pin, btn.state == HIGH ? LOW : HIGH);
+    }
+
+/**
+ *
+ * @param pinA
+ * @param pinB
+ * @param step
+ */
+    void setEncoder(const uint8_t pinA, const uint8_t pinB, const uint8_t step) {
+        encoderPinA = pinA;
+        encoderPinB = pinB;
+        encoderSteps = step;
+        pinMode(encoderPinA, INPUT);
+        pinMode(encoderPinB, INPUT);
+    }
+
+/**
+ *
+ * @param pinA
+ * @param pinB
+ */
+    void setEncoder(const uint8_t pinA, const uint8_t pinB) {
+        encoderPinA = pinA;
+        encoderPinB = pinB;
+        pinMode(encoderPinA, INPUT);
+        pinMode(encoderPinB, INPUT);
+    }
+
+/**
+ *
+ * @return
+ */
+    boolean click() {
+        boolean state = this->isPressed;
+        isPressed = false;
+        return state;
+    }
+
+/**
+ *
+ * @param btn
+ * @return
+ */
+    boolean click(Button btn) {
+        if (this->isPressed) {
+            isPressed = false;
+            return this->is(btn);
+        }
+        return false;
+    }
+
+/**
+ *
+ * @param btn
+ * @return
+ */
+    boolean is(Button btn) {
+        for (offset = 0; offset < BTN_TOGETHER_MAX; ++offset) {
+            if (this->pressed[offset].pin == btn.pin && lastPressed != btn.pin) {
+                lastPressed = btn.pin;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    uint8_t getEncoder() {
+        return encoderPosition;
+    }
+/**
+ *
+ * @return
+ */
+    boolean isEncoder() {
+        if (encoderPositionLast != encoderPosition) {
+            encoderPositionLast = encoderPosition;
+            return true;
+        }
+        return false;
+    }
+
+
+    void listen(void) {
+        if (encoderPinA && encoderPinB) {
+            this->encoder();
+        }
+        this->buttons();
+
 
     }
 
