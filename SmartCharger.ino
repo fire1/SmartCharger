@@ -28,6 +28,7 @@ const uint8_t encoderPinC = 6;
 SmartCharger smc;
 ButtonsDriver btn;
 UserInterface ui;
+MenuStructure mn;
 Button btnSet = {encoderPinC, LOW, 200};
 
 void setup() {
@@ -42,6 +43,7 @@ void setup() {
 }
 
 volatile uint16_t offset;
+
 void loop() {
     btn.listen();
 
@@ -49,13 +51,21 @@ void loop() {
     if (btn.click(btnSet)) {
         Serial.println("Button active");
     }
-    if (btn.isEncoder()) {
 
+    if (btn.isEncoderUp()) {
+        mn.moveUp();
+        offset = 301;
     }
+
+    if (btn.isEncoderDw()) {
+        mn.moveDw();
+        offset = 301;
+    }
+
 
     if (offset > 300) {
         smc.charge(offset);
-        ui.draw();
+        ui.draw(smc.getData());
         offset = 0;
     }
 

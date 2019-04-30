@@ -43,7 +43,7 @@ private:
 
     uint16_t volt, load;
     unsigned long readContainerVlt, readContainerAmp;
-    uiData data;
+    uiData *data;
     chargeMode *mode;
 
 /**
@@ -98,7 +98,9 @@ private:
         Serial.print(F("  AMP: "));
         Serial.println(amperage);
 
-        data = {voltage * 0.01, amperage * 0.001, 0};
+        data->volt = voltage * 0.01;
+        data->load = amperage * 0.001;
+
     }
 
 
@@ -112,7 +114,7 @@ private:
 
             }
 
-            data.step++;
+            data->step++;
         }
     }
 
@@ -145,6 +147,10 @@ public:
         calculate(offset);
         control();
         measure();
+    }
+
+    uiData *getData() {
+        return data;
     }
 
 

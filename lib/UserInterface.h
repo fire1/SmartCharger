@@ -7,11 +7,12 @@
 
 #include <U8g2lib.h>
 #include "Language.h"
+#include "SmartCharger.h"
 
 #ifndef _U8G2LIB_HH
 
 #include "../libraries/U8g2/src/U8g2lib.h"
-#include "SmartCharger.h"
+
 
 #endif
 U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
@@ -24,7 +25,7 @@ U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 class UserInterface {
 
     String strDsp;
-
+    uiData *data;
 public:
     static uint8_t cursor;
 
@@ -73,7 +74,9 @@ public:
     }
 
 
-    void draw() {
+    void draw(uiData *data) {
+        this->data = data;
+
         u8g2.clearBuffer();
         this->screens();
         u8g2.sendBuffer();
@@ -83,7 +86,8 @@ public:
 protected:
 
     void screenWelcome() {
-
+        u8g2.setCursor(2,16);
+        u8g2.print(msg(1));
     }
 
 
@@ -92,8 +96,11 @@ protected:
     }
 
     void screenCharging() {
-//        showAmperage(data.load);
-//        showVoltages(data.volt);
+        //font: battery19
+        if (data) {
+            showAmperage(data->load);
+            showVoltages(data->volt);
+        }
     }
 
 

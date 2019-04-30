@@ -11,18 +11,19 @@
 #include "UserInterface.h"
 
 const uint8_t MENU_NAME_1 = 1;
-const uint8_t MENU_NAME_11 = 11;
-const uint8_t MENU_NAME_12 = 12;
+const uint8_t MENU_NAME_11 = 2;
+const uint8_t MENU_NAME_12 = 3;
 
 static void menuUseEvent();
+
 static void menuChangeEvent();
+
 /**
  * Building the menu
  */
 class MenuStructure {
 
     MenuBackend menu;
-    ButtonsDriver *btn;
     MenuItem
             mainMenu,
             modeMenu,
@@ -33,7 +34,7 @@ public:
 /**
  * Menu constructor
  */
-    MenuStructure(ButtonsDriver &_b) : btn(&_b),
+    MenuStructure() :
                                        menu(menuUseEvent, menuChangeEvent),//  base menu initialization
 
             //
@@ -53,15 +54,12 @@ public:
     }
 
     void begin(void) {
-        menu.getRoot()
-                .add(mainMenu);
+        menu.getRoot().add(mainMenu);
 
         mainMenu.addRight(modeMenu).addRight(chargeMenu);
         modeMenu.add(mainMenu);
-
-
         menu.moveDown();
-//        UserInterface::cursor = 1;
+        UserInterface::cursor = 0;
 
     }
 
@@ -70,7 +68,7 @@ public:
     }
 
 
-   static  void menuChanged(MenuChangeEvent change) {
+    static void menuChanged(MenuChangeEvent change) {
         //
         // Resolve
         MenuItem curMenuItem = change.to; //get the destination menu
@@ -91,5 +89,9 @@ public:
 
     }
 };
+
+static void menuUseEvent(MenuUseEvent used) {
+    UserInterface::cursor = used.item.getName();
+}
 
 #endif //SMARTCHARGER_MENUSTRUCT_H

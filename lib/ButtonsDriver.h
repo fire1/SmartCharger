@@ -56,8 +56,10 @@ private:
         if ((encoderPinALast == LOW) && (pinStateEncoder == HIGH)) {
             if (digitalRead(encoderPinB) == LOW) {
                 encoderPosition = encoderPosition - encoderSteps;
+                lastInteraction = millis();
             } else {
                 encoderPosition = encoderPosition + encoderSteps;
+                lastInteraction = millis();
             }
         }
         encoderPinALast = pinStateEncoder;
@@ -170,6 +172,7 @@ public:
     uint8_t getEncoder() {
         return encoderPosition;
     }
+
 /**
  *
  * @return
@@ -180,6 +183,20 @@ public:
             return true;
         }
         return false;
+    }
+
+    boolean isEncoderUp() {
+        if (encoderPositionLast < encoderPosition) {
+            encoderPositionLast = encoderPosition;
+            return true;
+        }
+    }
+
+    boolean isEncoderDw() {
+        if (encoderPositionLast > encoderPosition) {
+            encoderPositionLast = encoderPosition;
+            return true;
+        }
     }
 
 
