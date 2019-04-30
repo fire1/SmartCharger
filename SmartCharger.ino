@@ -158,8 +158,8 @@ void loop() {
         u8g2.setCursor(2, 32);
         u8g2.print(dspVoltage);
 
-        u8g2.setCursor(2, 16);
-        u8g2.print(dspAmperage);
+            u8g2.setCursor(2, 16);
+            u8g2.print(dspAmperage);
 
         u8g2.sendBuffer();
         indexShow++;

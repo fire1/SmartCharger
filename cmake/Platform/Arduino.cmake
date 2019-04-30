@@ -1870,7 +1870,7 @@ function(GENERATE_CPP_FROM_SKETCH MAIN_SKETCH_PATH SKETCH_SOURCES SKETCH_CPP)
     # write the file head
     file(APPEND ${SKETCH_CPP} "#line 1 \"${MAIN_SKETCH_PATH}\"\n${SKETCH_HEAD}")
 
-    # Count head line offset (for GCC error reporting)
+    # Count head line offsetDraw (for GCC error reporting)
     file(STRINGS ${SKETCH_CPP} SKETCH_HEAD_LINES)
     list(LENGTH SKETCH_HEAD_LINES SKETCH_HEAD_LINES_COUNT)
     math(EXPR SKETCH_HEAD_OFFSET "${SKETCH_HEAD_LINES_COUNT}+2")

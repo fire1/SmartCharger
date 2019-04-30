@@ -2,8 +2,8 @@
 // Created by Admin on 4/27/2019.
 //
 
-#ifndef SMART_CHARGER_EN_H
-#define SMART_CHARGER_EN_H
+#ifndef LAN_H
+#define LAN_H
 
 #include <Arduino.h>
 
