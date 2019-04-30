@@ -16,6 +16,7 @@
 #include "lib/MenuStructure.h"
 #include "lan/en.h"
 #include "lib/Language.h"
+#include "ChargeMode.h"
 
 U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 
@@ -158,8 +159,8 @@ void loop() {
         u8g2.setCursor(2, 32);
         u8g2.print(dspVoltage);
 
-            u8g2.setCursor(2, 16);
-            u8g2.print(dspAmperage);
+        u8g2.setCursor(2, 16);
+        u8g2.print(dspAmperage);
 
         u8g2.sendBuffer();
         indexShow++;

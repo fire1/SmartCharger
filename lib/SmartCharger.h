@@ -26,14 +26,7 @@
 #define PIN_VOLT A2
 #define PIN_LOAD A0
 
-struct chargeMode {
-    uint8_t maxTime = 0;
-    uint8_t setVolt = 0;
-    uint8_t setLoad = 0;
-    uint8_t maxVolt = 0;
-    uint8_t maxLoad = 0;
-    uint8_t pgmName = 0; // index of PROGMEM name
-};
+
 
 struct uiData {
     float volt;
