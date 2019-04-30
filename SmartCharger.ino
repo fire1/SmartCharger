@@ -11,14 +11,17 @@
 #define BTN_MAX 1
 
 #include <Wire.h>
+U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
+
+#include "lan/en.h"
+#include "lib/Language.h"
 
 #include "lib/ButtonsDriver.h"
 #include "lib/MenuStructure.h"
-#include "lan/en.h"
-#include "lib/Language.h"
+
 #include "ChargeMode.h"
 
-U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
+
 
 const uint8_t pinGroundControl = 3;
 const uint8_t pinVoltageControl = 9;
@@ -148,7 +151,7 @@ void loop() {
 
 
         String dspVoltage = String(msg(6));
-//        dspVoltage += showVoltage / indexShow;
+//        dspVoltage += showVoltages / indexShow;
         dspVoltage += voltage * 0.01;
 
         String dspAmperage = String(msg(7));

@@ -8,13 +8,14 @@
 #include <Arduino.h>
 #include "MenuBackend.h"
 #include "ButtonsDriver.h"
-
+#include "UserInterface.h"
 
 const uint8_t MENU_NAME_1 = 1;
 const uint8_t MENU_NAME_11 = 11;
 const uint8_t MENU_NAME_12 = 12;
 
-
+static void menuUseEvent();
+static void menuChangeEvent();
 /**
  * Building the menu
  */
@@ -25,7 +26,7 @@ class MenuStructure {
     MenuItem
             mainMenu,
             modeMenu,
-            setupMenu;
+            chargeMenu;
 
 
 public:
@@ -33,13 +34,13 @@ public:
  * Menu constructor
  */
     MenuStructure(ButtonsDriver &_b) : btn(&_b),
-                                       menu(this->menuUseEvent, this->menuChangeEvent),//  base menu initialization
+                                       menu(menuUseEvent, menuChangeEvent),//  base menu initialization
 
             //
             // Main menu
                                        mainMenu(MenuItem(MENU_NAME_1, 1)),
                                        modeMenu(MenuItem(MENU_NAME_11)),
-                                       setupMenu(MenuItem(MENU_NAME_12)) {
+                                       chargeMenu(MenuItem(MENU_NAME_12)) {
     }
 
 
@@ -53,9 +54,9 @@ public:
 
     void begin(void) {
         menu.getRoot()
-                .add(mainMenu);;
+                .add(mainMenu);
 
-        mainMenu.addRight(modeMenu).addRight(setupMenu);
+        mainMenu.addRight(modeMenu).addRight(chargeMenu);
         modeMenu.add(mainMenu);
 
 
@@ -69,17 +70,11 @@ public:
     }
 
 
-    void menuChanged(MenuChangeEvent change) {
-        //
-        // Check is navigation is active
-//        if (btn->getNavigationState() == 0) {
-//            return;
-//        }
-
+   static  void menuChanged(MenuChangeEvent change) {
         //
         // Resolve
         MenuItem curMenuItem = change.to; //get the destination menu
-//        UserInterface::cursor = curMenuItem.getName();
+        UserInterface::cursor = curMenuItem.getName();
         return;
 
     }

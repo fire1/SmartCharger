@@ -6,7 +6,7 @@
 #define SMARTCHARGER_UI_H
 
 #include <U8g2lib.h>
-#include "lib/Language.h"
+#include "Language.h"
 
 #ifndef _U8G2LIB_HH
 
@@ -22,9 +22,11 @@ U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 
 
 class UserInterface {
-
     volatile uint16_t offsetDraw = 0;
     String strDsp;
+
+public:
+    static uint8_t cursor;
 
 private:
 
@@ -39,7 +41,7 @@ private:
 
     }
 
-    void showVoltage(float voltage) {
+    void showVoltages(float voltage) {
 
 
         strDsp = String(msg(6));
@@ -51,7 +53,6 @@ private:
 
 
 public:
-    static uint8_t cursor;
 
     void begin() {
         u8g2.begin();
@@ -59,12 +60,11 @@ public:
     }
 
 
-    void draw(uiData data) {
+    void draw() {
 
         if (offsetDraw > UI_REFRESH_RATE) {
             u8g2.clearBuffer();
-            showAmperage(data.a);
-            showVoltage(data.v);
+
 
             offsetDraw = 0;
             u8g2.sendBuffer();
@@ -72,8 +72,15 @@ public:
 
         offsetDraw++;
     }
+
+
+protected:
+    void screenCharge(){
+//        showAmperage(data.load);
+//        showVoltages(data.volt);
+    }
 };
 
-static uint8_t UserInterface::cursor = 0;
+ uint8_t UserInterface::cursor = 0;
 
 #endif //SMARTCHARGER_UI_H_H
