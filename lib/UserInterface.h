@@ -25,9 +25,8 @@ U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 class UserInterface {
 
     String strDsp;
-    uiData *data;
 public:
-    static uint8_t cursor,sector;
+    static uint8_t cursor, sector;
 
 private:
 
@@ -74,46 +73,29 @@ public:
     }
 
 
-    void draw(uiData *data,MenuBackend menu) {
-        this->data = data;
+    void draw(uiData *data, MenuBackend menu) {
 
         u8g2.clearBuffer();
-        u8g2.setCursor(2,16);
-        u8g2.print(msg(cursor));
-        if(sector == 0){
-            u8g2.setCursor(2,32);
-            u8g2.print(msg(1));
-            u8g2.print(VERSION);
-        }
+//        u8g2.firstPage();
+//        do {
+            u8g2.setCursor(2, 16);
+            u8g2.print(msg(cursor));
+            if (sector == 0) {
+                u8g2.setCursor(2, 32);
+                u8g2.print(msg(1));
+                u8g2.print(VERSION);
+            }
+
+            if (sector == 10) {
+
+            }
+//        } while ( u8g2.nextPage() );
         u8g2.sendBuffer();
     }
-
-
-protected:
-
-    void screenWelcome() {
-        u8g2.setCursor(2,16);
-        u8g2.print(msg(0));
-    }
-
-
-    void screenSelection() {
-        u8g2.setCursor(2,16);
-        u8g2.print(msg(2));
-    }
-
-    void screenCharging() {
-        //font: battery19
-        if (data) {
-            showAmperage(data->load);
-            showVoltages(data->volt);
-        }
-    }
-
 
 };
 
 uint8_t UserInterface::cursor = 0;
-uint8_t UserInterface::sector= 0;
+uint8_t UserInterface::sector = 0;
 
 #endif //SMARTCHARGER_UI_H_H

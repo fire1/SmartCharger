@@ -10,10 +10,6 @@
 #include "ButtonsDriver.h"
 #include "UserInterface.h"
 
-const uint8_t MENU_NAME_1 = 1;
-const uint8_t MENU_NAME_11 = 11;
-const uint8_t MENU_NAME_12 = 12;
-
 
 /**
  * Building the menu
@@ -62,19 +58,19 @@ public:
 
         menuTypeLi.add(lis1);
         lis1.addRight(lis2).addRight(lis3).addRight(lis4).addRight(lis1);
-        lis1.add(menuCharge);
-        lis2.add(menuCharge);
-        lis3.add(menuCharge);
-        lis4.add(menuCharge);
+        lis1.add(menuCharge).add(lis1);
+        lis2.add(menuCharge).add(lis2);
+        lis3.add(menuCharge).add(lis3);
+        lis4.add(menuCharge).add(lis4);
 
 
         menuTypeNi.add(nis2);
         nis2.addRight(nis4).addRight(nis8).addRight(nis2);
-        nis2.add(menuCharge);
-        nis4.add(menuCharge);
-        nis8.add(menuCharge);
+        nis2.add(menuCharge).add(nis2);
+        nis4.add(menuCharge).add(nis4);
+        nis8.add(menuCharge).add(nis8);
 
-        menuTypeAc.add(aci6).add(menuCharge);
+        menuTypeAc.add(aci6).add(menuCharge).add(aci6);
 
 //        menuTypeOt.add(menuCharge);
 
@@ -88,6 +84,7 @@ public:
         uint8_t cursor = used.item.getName();
         Serial.print(F("Sector: "));
         Serial.println(cursor);
+
         UserInterface::sector = cursor;
     }
 
