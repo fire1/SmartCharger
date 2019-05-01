@@ -11,7 +11,6 @@
 #include "UserInterface.h"
 
 
-
 /**
  * Building the menu
  */
@@ -26,45 +25,50 @@ public:
  * Menu constructor
  */
     MenuStructure() : menu(menuUseEvent, menuChangeEvent),//  base menu initialization
-                      menuEntry(MenuItem(msg(0), 1)),
-                      menuSelect(MenuItem(msg(2), 2)),
-                      menuAbouts(MenuItem(msg(3), 3)),
-                      menuTypeLi(MenuItem(msg(11), 4)),// li
-                      menuTypeNi(MenuItem(msg(12), 5)),// ni
-                      menuTypeAc(MenuItem(msg(13), 6)),
-                      menuTypeOt(MenuItem(msg(14), 7)),
-                      menuCharge(MenuItem(msg(15), 8)) {
+                      menuEntry(MenuItem("SmartCharger")),
+                      menuSelect(MenuItem("Select Type")),
+                      menuAbouts(MenuItem("About")),
+                      menuTypeLi(MenuItem("Li-Ion")),// li
+                      menuTypeNi(MenuItem("Ni-Mh")),// ni
+                      menuTypeAc(MenuItem("Acid")),
+                      menuTypeOt(MenuItem("Other")),
+                      menuCharge(MenuItem("Charging")) {
     }
 
     void begin(void) {
         menu.getRoot().add(menuEntry);
         menuEntry.addRight(menuSelect).addRight(menuAbouts);
+        menuAbouts.addRight(menuEntry);
 
         menuSelect.addRight(menuTypeLi).addRight(menuTypeNi).addRight(menuTypeAc).addRight(menuTypeOt);
-        menuTypeLi.addAfter(menuCharge).addBefore(menuCharge);
-        menuTypeNi.addAfter(menuCharge).addBefore(menuCharge);
-        menuTypeAc.addAfter(menuCharge).addBefore(menuCharge);
-        menuTypeOt.addAfter(menuCharge).addBefore(menuCharge);
+        menuTypeOt.addRight(menuSelect);
+        menuTypeLi.add(menuCharge).add(menuCharge);
+        menuTypeNi.add(menuCharge).add(menuCharge);
+        menuTypeAc.add(menuCharge).add(menuCharge);
+        menuTypeOt.add(menuCharge).add(menuCharge);
 
+        menu.moveDown();
+        menu.use();
 
-        menu.moveDown(); // shift to main menu
     }
 
     static void menuUseEvent(MenuUseEvent used) {
-        UserInterface::cursor = used.item.getShortkey();
-        Serial.print(F("Cursor:"));
-        Serial.print(UserInterface::cursor, DEC);
-        Serial.print(F("Name: "));
-        Serial.print(used.item.getName());
-        Serial.println();
+        Serial.print(F("Menu use "));
+        Serial.println(used.item.getName());
+        if (used.item == "Delay") //comparison agains a known item
+        {
+            Serial.println(F("menuUseEvent found Delay (D)"));
+        }
     }
 
-    static void menuChangeEvent(MenuChangeEvent change) {
-        Serial.print(change.from.getName());
-        Serial.print(F(" / To "));
-        Serial.print(change.to.getShortkey(), DEC);
-        Serial.print(F("  "));
-        Serial.println(change.to.getName());
+    static void menuChangeEvent(MenuChangeEvent changed) {
+        Serial.print(F("Menu change "));
+        Serial.print(changed.from.getName());
+        Serial.print(" ");
+        Serial.println(changed.to.getName());
+
+
+
     }
 
 
