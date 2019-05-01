@@ -86,17 +86,17 @@ private:
 
 
         //  debug info
-        Serial.print(F(" VRD: "));
-        Serial.print(volt);
-
-        Serial.print(F(" VLT: "));
-        Serial.print(voltage);
-
-        Serial.print(F("  LDS: "));
-        Serial.print(load);
-
-        Serial.print(F("  AMP: "));
-        Serial.println(amperage);
+//        Serial.print(F(" VRD: "));
+//        Serial.print(volt);
+//
+//        Serial.print(F(" VLT: "));
+//        Serial.print(voltage);
+//
+//        Serial.print(F("  LDS: "));
+//        Serial.print(load);
+//
+//        Serial.print(F("  AMP: "));
+//        Serial.println(amperage);
 
         data->volt = voltage * 0.01;
         data->load = amperage * 0.001;

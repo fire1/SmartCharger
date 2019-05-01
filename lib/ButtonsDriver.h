@@ -19,7 +19,7 @@
 
 
 #ifndef BTN_BOUNCE_TIME
-#define BTN_BOUNCE_TIME 350
+#define BTN_BOUNCE_TIME 300
 #endif
 
 
@@ -52,14 +52,20 @@ private:
     }
 
     void encoder() {
+        if (millis() > lastInteraction + BTN_BOUNCE_TIME) {
+            lastPressed = '\0';
+            lastInteraction = millis();
+        }
         pinStateEncoder = (uint8_t) digitalRead(encoderPinA);
         if ((encoderPinALast == LOW) && (pinStateEncoder == HIGH)) {
             if (digitalRead(encoderPinB) == LOW) {
                 encoderPosition = encoderPosition - encoderSteps;
                 lastInteraction = millis();
+                lastPressed = encoderPinA;
             } else {
                 encoderPosition = encoderPosition + encoderSteps;
                 lastInteraction = millis();
+                lastPressed = encoderPinB;
             }
         }
         encoderPinALast = pinStateEncoder;
@@ -178,7 +184,7 @@ public:
  * @return
  */
     boolean isEncoder() {
-        if (encoderPositionLast != encoderPosition) {
+        if (encoderPositionLast != encoderPosition && lastPressed == '\0') {
             encoderPositionLast = encoderPosition;
             return true;
         }
@@ -186,17 +192,19 @@ public:
     }
 
     boolean isEncoderUp() {
-        if (encoderPositionLast < encoderPosition) {
+        if (encoderPositionLast < encoderPosition && lastPressed == '\0') {
             encoderPositionLast = encoderPosition;
             return true;
         }
+        return false;
     }
 
     boolean isEncoderDw() {
-        if (encoderPositionLast > encoderPosition) {
+        if (encoderPositionLast > encoderPosition && lastPressed == '\0') {
             encoderPositionLast = encoderPosition;
             return true;
         }
+        return false;
     }
 
 

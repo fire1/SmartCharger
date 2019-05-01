@@ -7,10 +7,10 @@
 
 #include <Arduino.h>
 
-const char msg0[] PROGMEM = "Welcome";
-const char msg1[] PROGMEM = "Charge type";
-const char msg2[] PROGMEM = "About";
-const char msg3[] PROGMEM = "About des";
+const char msg0[] PROGMEM = "SmartCharger";
+const char msg1[] PROGMEM = "Version:";
+const char msg2[] PROGMEM = "Charge type:";
+const char msg3[] PROGMEM = "About";
 const char msg4[] PROGMEM = "About des";
 const char msg5[] PROGMEM = "About des";
 const char msg6[] PROGMEM = "V: ";
