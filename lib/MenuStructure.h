@@ -10,6 +10,10 @@
 #include "ButtonsDriver.h"
 #include "UserInterface.h"
 
+const uint8_t MENU_NAME_1 = 1;
+const uint8_t MENU_NAME_11 = 11;
+const uint8_t MENU_NAME_12 = 12;
+
 
 /**
  * Building the menu
@@ -17,7 +21,8 @@
 class MenuStructure {
 
     MenuBackend menu;
-    MenuItem menuEntry, menuSelect, menuAbouts, menuTypeLi, menuTypeNi, menuTypeAc, menuTypeOt, menuCharge;
+    MenuItem menuEntry, menuSelect, menuAbouts, menuTypeLi, menuTypeNi, menuTypeAc, menuTypeOt, menuCharge,
+            lis1, lis2, lis3, lis4, nis2, nis4, nis8, aci6;
 
 
 public:
@@ -25,27 +30,53 @@ public:
  * Menu constructor
  */
     MenuStructure() : menu(menuUseEvent, menuChangeEvent),//  base menu initialization
-                      menuEntry(MenuItem("SmartCharger")),
-                      menuSelect(MenuItem("Select Type")),
-                      menuAbouts(MenuItem("About")),
-                      menuTypeLi(MenuItem("Li-Ion")),// li
-                      menuTypeNi(MenuItem("Ni-Mh")),// ni
-                      menuTypeAc(MenuItem("Acid")),
-                      menuTypeOt(MenuItem("Other")),
-                      menuCharge(MenuItem("Charging")) {
+                      menuEntry(MenuItem(0)),
+                      menuSelect(MenuItem(2)),
+                      menuAbouts(MenuItem(3)),
+                      menuTypeLi(MenuItem(11)),// li
+                      menuTypeNi(MenuItem(12)),// ni
+                      menuTypeAc(MenuItem(13)),
+                      menuTypeOt(MenuItem(14)),
+                      menuCharge(MenuItem(10)),
+
+                      lis1(MenuItem(15)),
+                      lis2(MenuItem(16)),
+                      lis3(MenuItem(17)),
+                      lis4(MenuItem(18)),
+                      nis2(MenuItem(19)),
+                      nis4(MenuItem(20)),
+                      nis8(MenuItem(21)),
+                      aci6(MenuItem(23)) {
     }
 
     void begin(void) {
         menu.getRoot().add(menuEntry);
-        menuEntry.addRight(menuSelect).addRight(menuAbouts);
-        menuAbouts.addRight(menuEntry);
+        menuEntry.add(menuSelect);
+        menuSelect.addRight(menuAbouts);
+        menuAbouts.addRight(menuSelect);
 
-        menuSelect.addRight(menuTypeLi).addRight(menuTypeNi).addRight(menuTypeAc).addRight(menuTypeOt);
-        menuTypeOt.addRight(menuSelect);
-        menuTypeLi.add(menuCharge).add(menuCharge);
-        menuTypeNi.add(menuCharge).add(menuCharge);
-        menuTypeAc.add(menuCharge).add(menuCharge);
-        menuTypeOt.add(menuCharge).add(menuCharge);
+
+        menuSelect.add(menuTypeLi);
+        menuTypeLi.addRight(menuTypeNi).addRight(menuTypeAc)/*.addRight(menuTypeOt)*/.addRight(menuTypeLi);
+
+
+        menuTypeLi.add(lis1);
+        lis1.addRight(lis2).addRight(lis3).addRight(lis4).addRight(lis1);
+        lis1.add(menuCharge);
+        lis2.add(menuCharge);
+        lis3.add(menuCharge);
+        lis4.add(menuCharge);
+
+
+        menuTypeNi.add(nis2);
+        nis2.addRight(nis4).addRight(nis8).addRight(nis2);
+        nis2.add(menuCharge);
+        nis4.add(menuCharge);
+        nis8.add(menuCharge);
+
+        menuTypeAc.add(aci6).add(menuCharge);
+
+//        menuTypeOt.add(menuCharge);
 
         menu.moveDown();
         menu.use();
@@ -53,20 +84,19 @@ public:
     }
 
     static void menuUseEvent(MenuUseEvent used) {
-        Serial.print(F("Menu use "));
-        Serial.println(used.item.getName());
-        if (used.item == "Delay") //comparison agains a known item
-        {
-            Serial.println(F("menuUseEvent found Delay (D)"));
-        }
+
+        uint8_t cursor = used.item.getName();
+        Serial.print(F("Sector: "));
+        Serial.println(cursor);
+        UserInterface::sector = cursor;
     }
 
     static void menuChangeEvent(MenuChangeEvent changed) {
-        Serial.print(F("Menu change "));
-        Serial.print(changed.from.getName());
-        Serial.print(" ");
-        Serial.println(changed.to.getName());
-
+        Serial.print(F("Change: "));
+//        Serial.print(msg(changed.from.getName()));
+//        Serial.print(" ");
+        Serial.println(msg(changed.to.getName()));
+        UserInterface::cursor = changed.to.getName();
 
 
     }
@@ -77,16 +107,23 @@ public:
     }
 
 
-    void moveTo() {
+    void goTo() {
+        menu.moveDown();
         menu.use();
     }
 
-    void moveRight() {
-        menu.moveRight();
+    void goHome() {
+        menu.getRoot().moveDown();
+        menu.use();
     }
+
 
     void moveLeft() {
         menu.moveLeft();
+    }
+
+    void goRight() {
+        menu.moveRight();
     }
 };
 

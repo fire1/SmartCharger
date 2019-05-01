@@ -11,8 +11,9 @@
 #endif
 
 
-#define BTN_MAX 1
-#define BTN_BOUNCE_TIME 300
+
+#define BTN_MAX 2
+#define BTN_BOUNCE_TIME 200
 
 #include <Wire.h>
 #include "lib/SmartCharger.h"
@@ -33,7 +34,7 @@ SmartCharger smc;
 ButtonsDriver btn;
 UserInterface ui;
 MenuStructure mn;
-Button btnSet = {encoderPinC, LOW, BTN_BOUNCE_TIME + 1};
+Button btnSet = {encoderPinC, LOW, 200};
 
 Button btnExit = {encoderPinC, LOW, 2000};
 
@@ -55,27 +56,34 @@ volatile uint16_t offset;
 void loop() {
     btn.listen();
 
+    if (Serial.available()) {
+        byte read = Serial.read();
+        switch (read) {
+            case 'w': mn.getMB().moveUp(); break;
+            case 's': mn.getMB().moveDown(); break;
+            case 'd': mn.getMB().moveRight(); break;
+            case 'a': mn.getMB().moveLeft(); break;
+            case 'e': mn.getMB().use(); break;
+        }
+    }
 
     if (btn.click(btnSet)) {
-        mn.getMB().moveDown();
-        mn.getMB().use();
+        mn.goTo();
         Serial.println("Button active");
     }
     if (btn.click(btnExit)) {
-        mn.getMB().toRoot();
+        mn.goHome();
         Serial.println("Reset active");
     }
 
     if (btn.isEncoderUp()) {
-        mn.getMB().moveRight();
-        mn.getMB().use();
+        mn.moveLeft();
         offset = 301;
         Serial.println("Up");
     }
 
     if (btn.isEncoderDw()) {
-        mn.getMB().moveLeft();
-        mn.getMB().use();
+        mn.goRight();
         offset = 301;
         Serial.println("Dw");
     }

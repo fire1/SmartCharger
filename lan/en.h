@@ -8,8 +8,8 @@
 #include <Arduino.h>
 
 const char msg0[] PROGMEM = "SmartCharger";
-const char msg1[] PROGMEM = "Version:";
-const char msg2[] PROGMEM = "Charge type:";
+const char msg1[] PROGMEM = "Version: ";
+const char msg2[] PROGMEM = "Charge type";
 const char msg3[] PROGMEM = "About";
 const char msg4[] PROGMEM = "About des";
 const char msg5[] PROGMEM = "About des";
@@ -17,7 +17,7 @@ const char msg6[] PROGMEM = "V: ";
 const char msg7[] PROGMEM = "A: ";
 const char msg8[] PROGMEM = " : ";
 const char msg9[] PROGMEM = " : ";
-const char msg10[] PROGMEM = " : ";
+const char msg10[] PROGMEM = "Charging ";
 
 
 const char msg11[] PROGMEM = "LiIon";

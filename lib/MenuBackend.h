@@ -1,74 +1,57 @@
 /*
-   ||
-   || @file 	MenuBackend.h
-   || @version 1.6
-   || @author 	Alexander Brevig
-   || @contact alexanderbrevig@gmail.com
-   || @contribution Adrian Brzezinski adrb@wp.pl, http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?action=viewprofile;username=vzhang
-   || @contribution Orange Cat, https://github.com/Orange-Cat/MenuBackend
-   ||
-   || @description
-   || | Provide an easy way of making menus
-   ||
-   || #
-   || @license
-   || | This library is free software; you can redistribute it and/or
-   || | modify it under the terms of the GNU Lesser General Public
-   || | License as published by the Free Software Foundation; version
-   || | 2.1 of the License.
-   || |
-   || | This library is distributed in the hope that it will be useful,
-   || | but WITHOUT ANY WARRANTY; without even the implied warranty of
-   || | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   || | Lesser General Public License for more details.
-   || |
-   || | You should have received a copy of the GNU Lesser General Public
-   || | License along with this library; if not, write to the Free Software
-   || | Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-   || #
-   ||
- */
+||
+|| @file 	MenuBackend.h
+|| @version 1.4
+|| @author 	Alexander Brevig
+|| @contact alexanderbrevig@gmail.com
+|| @contribution Adrian Brzezinski adrb@wp.pl, http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?action=viewprofile;username=vzhang
+||
+|| @description
+|| | Provide an easy way of making menus
+|| #
+||
+|| @license
+|| | This library is free software; you can redistribute it and/or
+|| | modify it under the terms of the GNU Lesser General Public
+|| | License as published by the Free Software Foundation; version
+|| | 2.1 of the License.
+|| |
+|| | This library is distributed in the hope that it will be useful,
+|| | but WITHOUT ANY WARRANTY; without even the implied warranty of
+|| | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+|| | Lesser General Public License for more details.
+|| |
+|| | You should have received a copy of the GNU Lesser General Public
+|| | License along with this library; if not, write to the Free Software
+|| | Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+|| #
+||
+*/
 
 #ifndef MenuBackend_h
 #define MenuBackend_h
 
 #include <Arduino.h>
-#include <String.h>
-
 /*
-   A menu item will be a container for an item that is a part of a menu
-   Each such item has a logical position in the hierarchy as well as a text and maybe a mnemonic shortkey
- */
-
-class MenuBackend;
-
+	A menu item will be a container for an item that is a part of a menu
+	Each such item has a logical position in the hierarchy as well as a text and maybe a mnemonic shortkey
+*/
 class MenuItem {
-	friend class MenuBackend;
-
 public:
-	MenuItem(const char* itemName, char shortKey='\0' ) : name(itemName), shortkey(shortKey) {
-		flash_name = NULL;
-		before = right = after = left = 0;
-	}
-	MenuItem(const __FlashStringHelper* itemName, char shortKey='\0' ) : flash_name(itemName), shortkey(shortKey) {
-		name = NULL;
+	MenuItem(const uint8_t itemName, char shortKey='\0' ) : name(itemName), shortkey(shortKey) {
 		before = right = after = left = 0;
 	}
 
-	const char* getName() const { return name; }
-	const __FlashStringHelper* getFlashName() const { return flash_name; }
-
-	char getShortkey() const { return shortkey; }
-	bool hasShortkey() const { return (shortkey!='\0'); }
-	void setBack(MenuItem *b) { back = b; }
-	void setBack(MenuItem &b) { back = &b; }
-	void setLeft(MenuItem *l) { left = l; }
-	void setLeft(MenuItem &l) { left = &l; }
-	MenuItem* getBack() const { return back; }
-	MenuItem* getBefore() const { return before; }
-	MenuItem* getRight() const { return right; }
-	MenuItem* getAfter() const { return after; }
-	MenuItem* getLeft() const { return left; }
+	//void use(){} //update some internal data / statistics
+	inline const uint8_t getName() const { return name; }
+	inline const char getShortkey() const { return shortkey; }
+	inline const bool hasShortkey() const { return (shortkey!='\0'); }
+	inline void setBack(MenuItem *b) { back = b; }
+	inline MenuItem* getBack() const { return back; }
+	inline MenuItem* getBefore() const { return before; }
+	inline MenuItem* getRight() const { return right; }
+	inline MenuItem* getAfter() const { return after; }
+	inline MenuItem* getLeft() const { return left; }
 
 	MenuItem *moveBack() { return back; }
 
@@ -110,7 +93,6 @@ public:
 	MenuItem &addAfter(MenuItem &mi) {
 		mi.before = this;
 		after = &mi;
-		if ( !mi.left ) mi.left = left;
 		if ( !mi.back ) mi.back = back;
 		return mi;
 	}
@@ -120,40 +102,9 @@ public:
 		if ( !mi.back ) mi.back = back;
 		return mi;
 	}
-
-public:
-	bool operator==(const char* test) const {
-		if (getName() != NULL)
-			return String(getName()) == test;
-		else
-			return String(getFlashName()) == test;
-	}
-
-	bool operator==(const String& test) const {
-		if (getName() != NULL)
-			return String(getName()) == test;
-		else
-			return String(getFlashName()) == test;
-	}
-
-	bool operator==(const MenuItem &rhs) const {
-		if (getName() != NULL) {
-			if (rhs.getName() != NULL)
-				return String(getName()) == rhs.getName();
-			else
-				return String(getName()) == String(rhs.getFlashName());
-		}
-		else {
-			if (rhs.getName() != NULL)
-				return String(getFlashName()) == rhs.getName();
-			else
-				return String(getFlashName()) == String(rhs.getFlashName());
-		}
-	}
-
 protected:
-	const char* name;
-	const __FlashStringHelper* flash_name;
+
+	uint8_t name;
 	const char shortkey;
 
 	MenuItem *before;
@@ -162,6 +113,24 @@ protected:
 	MenuItem *left;
 	MenuItem *back;
 };
+
+////no dependant inclusion of string or cstring
+//bool menuTestStrings(uint8_t a, const char *b) {
+//	while (*a) { if (*a != *b) { return false; } b++; a++; }
+//	return true;
+//}
+//bool operator==(MenuItem &lhs, char* test) {
+//	return menuTestStrings(lhs.getName(),test);
+//}
+//bool operator==(const MenuItem &lhs, char* test) {
+//	return menuTestStrings(lhs.getName(),test);
+//}
+//bool operator==(MenuItem &lhs, MenuItem &rhs) {
+//	return menuTestStrings(lhs.getName(),rhs.getName());
+//}
+//bool operator==(const MenuItem &lhs, MenuItem &rhs) {
+//	return menuTestStrings(lhs.getName(),rhs.getName());
+//}
 
 struct MenuChangeEvent {
 	const MenuItem &from;
@@ -174,22 +143,20 @@ struct MenuUseEvent {
 
 typedef void (*cb_change)(MenuChangeEvent);
 typedef void (*cb_use)(MenuUseEvent);
-typedef MenuItem& MenuItemRef;
 
 class MenuBackend {
 public:
 
-	MenuBackend(cb_use menuUse, cb_change menuChange = 0) : root("MenuRoot") {
+	MenuBackend(cb_use menuUse, cb_change menuChange = 0) : root(0) {
 		current = &root;
-		root.left = &root;
 		cb_menuChange = menuChange;
 		cb_menuUse = menuUse;
 	}
 
-	MenuItemRef getRoot() {
+	MenuItem &getRoot() {
 		return root;
 	}
-	MenuItemRef getCurrent() {
+	MenuItem &getCurrent() {
 		return *current;
 	}
 
@@ -226,11 +193,10 @@ public:
 			cb_menuUse(mue);
 		}
 	}
-
 	void toRoot() {
-		setCurrent(&getRoot());
-	}
 
+		setCurrent( &getRoot() );
+	}
 private:
 	void setCurrent( MenuItem *next ) {
 		if (next) {

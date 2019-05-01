@@ -27,7 +27,7 @@ class UserInterface {
     String strDsp;
     uiData *data;
 public:
-    static char cursor;
+    static uint8_t cursor,sector;
 
 private:
 
@@ -79,7 +79,12 @@ public:
 
         u8g2.clearBuffer();
         u8g2.setCursor(2,16);
-        u8g2.print(menu.getCurrent().getName());
+        u8g2.print(msg(cursor));
+        if(sector == 0){
+            u8g2.setCursor(2,32);
+            u8g2.print(msg(1));
+            u8g2.print(VERSION);
+        }
         u8g2.sendBuffer();
     }
 
@@ -106,29 +111,9 @@ protected:
     }
 
 
-    void screens() {
-        switch (UserInterface::cursor) {
-
-            default:
-            case 0:
-                screenWelcome();
-                break;
-
-            case 1:
-                screenSelection();
-                break;
-
-            case 2:
-                screenSelection();
-                break;
-            case 3:
-                screenCharging();
-                break;
-
-        }
-    }
 };
 
-char UserInterface::cursor = 0;
+uint8_t UserInterface::cursor = 0;
+uint8_t UserInterface::sector= 0;
 
 #endif //SMARTCHARGER_UI_H_H
