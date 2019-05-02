@@ -44,7 +44,8 @@ void setup() {
     btn.set(btnSet);
     btn.setEncoder(encoderPinA, encoderPinB, 10);
     delay(150);
-
+    pinMode(encoderPinC, INPUT_PULLUP);
+    digitalWrite(encoderPinC, HIGH);
 }
 
 volatile uint16_t offset;
@@ -54,8 +55,9 @@ void loop() {
     btn.listen();
 
     if (btn.click(btnSet)) {
-        mn.goTo();
+        mn.doEnter();
         Serial.println(F("Button active"));
+        btn.done();
     }
 
     if (btn.isEncoderUp()) {

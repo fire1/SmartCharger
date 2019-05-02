@@ -104,7 +104,7 @@ public:
     }
 
 
-    void goTo() {
+    void doEnter() {
         menu.moveDown();
         menu.use();
     }

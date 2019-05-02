@@ -38,24 +38,23 @@ private:
     uint8_t btnLen = 0, lastPressed;
     uint8_t pinStateEncoder;
     uint8_t encoderPinA, encoderPinB, encoderPinALast, encoderPosition, encoderPositionLast, encoderSteps = 1;
-    unsigned long *triggerTime;
     unsigned long lastInteraction = 0;
+    unsigned long triggerTime[BTN_TOGETHER_MAX];
     Button container[BTN_MAX], pressed[BTN_TOGETHER_MAX];
 
     boolean isPress(uint16_t time, uint8_t index) {
-        if (triggerTime[index] == 0) {
+        if (!triggerTime[index]) {
             triggerTime[index] = millis();
         }
         unsigned long timer = millis() - triggerTime[index];
-        return timer > time ? true : false;
+        boolean state = timer >= time ? true : false;
+        if (state) triggerTime[index] = 0;
+        return state;
 
     }
 
     void encoder() {
-        if (millis() > lastInteraction + BTN_BOUNCE_TIME) {
-            lastPressed = '\0';
-            lastInteraction = millis();
-        }
+
         pinStateEncoder = (uint8_t) digitalRead(encoderPinA);
         if ((encoderPinALast == LOW) && (pinStateEncoder == HIGH)) {
             if (digitalRead(encoderPinB) == LOW) {
@@ -73,10 +72,6 @@ private:
 
     void buttons() {
         uint8_t prsOff = 0;
-        if (millis() > lastInteraction + BTN_BOUNCE_TIME) {
-            lastPressed = '\0';
-            lastInteraction = millis();
-        }
         for (offset = 0; offset < btnLen; ++offset) {
             this->pressed[offset] = {};
             if (digitalRead(container[offset].pin) == container[offset].state) {
@@ -121,8 +116,8 @@ public:
         encoderPinA = pinA;
         encoderPinB = pinB;
         encoderSteps = step;
-        pinMode(encoderPinA, INPUT);
-        pinMode(encoderPinB, INPUT);
+        pinMode(encoderPinA, INPUT_PULLUP);
+        pinMode(encoderPinB, INPUT_PULLUP);
     }
 
 /**
@@ -143,7 +138,6 @@ public:
  */
     boolean click() {
         boolean state = this->isPressed;
-        isPressed = false;
         return state;
     }
 
@@ -154,10 +148,13 @@ public:
  */
     boolean click(Button btn) {
         if (this->isPressed) {
-            isPressed = false;
             return this->is(btn);
         }
         return false;
+    }
+
+    void done() {
+        isPressed = false;
     }
 
 /**
@@ -209,12 +206,14 @@ public:
 
 
     void listen(void) {
-        if (encoderPinA && encoderPinB) {
-            this->encoder();
+//        this->isPressed = false;
+        if (lastInteraction != 0 && millis() > lastInteraction + BTN_BOUNCE_TIME) {
+            lastPressed = '\0';
+            lastInteraction = 0;
         }
+
+        if (encoderPinA && encoderPinB)this->encoder();
         this->buttons();
-
-
     }
 
 

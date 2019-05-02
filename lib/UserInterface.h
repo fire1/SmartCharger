@@ -17,14 +17,11 @@
 #endif
 U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 
-#ifndef UI_REFRESH_RATE
-#define UI_REFRESH_RATE 300
-#endif
 
 
 class UserInterface {
 
-    String strDsp;
+
 public:
     static uint8_t cursor, sector;
 
@@ -46,7 +43,7 @@ private:
 
     void showAmperage(float amperage) {
 
-        strDsp = String(msg(7));
+        String strDsp = String(msg(7));
         strDsp += amperage;
 
         u8g2.setCursor(2, 16);
@@ -57,7 +54,7 @@ private:
     void showVoltages(float voltage) {
 
 
-        strDsp = String(msg(6));
+        String strDsp = String(msg(6));
         strDsp += voltage;
 
         u8g2.setCursor(2, 32);
