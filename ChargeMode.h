@@ -6,15 +6,70 @@
 #define SMART_CHARGER_CHARGE_MODE_H
 
 #include <Arduino.h>
+#include "lib/ProgramMem.h"
 
 struct chargeMode {
-    uint8_t maxTime = 0;
-    uint8_t setVolt = 0;
-    uint8_t setLoad = 0;
-    uint8_t maxVolt = 0;
-    uint8_t maxLoad = 0;
-    uint8_t pgmName = 0; // index of PROGMEM name
+    uint8_t maxTime;
+    uint8_t setVolt;
+    uint8_t setLoad;
+    uint8_t maxVolt;
+    uint8_t maxLoad;
+    uint8_t pgmName; // index of PROGMEM name
 };
+
+
+const chargeMode Lis1 PROGMEM = {1, 36, 255, 36, 200, 15,};
+const chargeMode lis2 PROGMEM = {1, 36, 255, 36, 200, 16,};
+const chargeMode lis3 PROGMEM = {1, 36, 255, 36, 200, 17,};
+const chargeMode lis4 PROGMEM = {1, 36, 255, 36, 200, 18,};
+const chargeMode nis2 PROGMEM = {1, 36, 255, 36, 200, 19,};
+const chargeMode nis4 PROGMEM = {1, 36, 255, 36, 200, 20,};
+const chargeMode nis8 PROGMEM = {1, 36, 255, 36, 200, 21,};
+const chargeMode aci6 PROGMEM = {1, 36, 255, 36, 200, 23,};
+
+
+const uint8_t chargeModeLen = 8;
+
+const chargeMode modeTable[chargeModeLen] PROGMEM = {
+        // LiIon
+        Lis1, lis2, lis3, lis4,
+        // NiMH
+        nis2, nis4, nis8,
+        // Acid
+        aci6
+
+
+};
+
+
+chargeMode getMode(uint8_t i) {
+    chargeMode thisItem;
+    PROGMEM_readAnything(&modeTable[i], thisItem);
+    return thisItem;
+}
+
+
+/*
+
+ //    strcpy_P(&_buffMode, (char *) pgm_read_word(&(modeTable[i])));
+//    memcpy_P(&_buffMode, (char *) pgm_read_word(&(modeTable[i])));
+
+ * */
+
+/*uint8_t *__bufMode = new uint8_t[lenMode];
+
+uint8_t *getMode(bt_mode *mode) {
+    memcpy_P(__bufMode, mode, lenMode);
+    return __bufMode;
+}*/
+
+//bt_mode *msg(uint8_t i) {
+//    memccpy_P(__bufMode,(uint8_t *) pgm_read_word(&(modeTable[i])));
+////    strcpy_P(__bufMode, (uint8_t *) pgm_read_byte(&(modeTable[i])));
+//    return __bufMode;
+//}
+
+
 
 //const struct  chargeMode ch_mode  PROGMEM = {maxTime:1, setVolt:36, setLoad: 255, maxVolt: 36, maxLoad:  200, pgmName: 15};
 
