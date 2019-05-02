@@ -5,10 +5,7 @@
 #ifndef SMART_CHARGER_LANGUAGE_H
 #define SMART_CHARGER_LANGUAGE_H
 
-#ifdef LAN_H
 #include "../lan/en.h"
-#endif
-
 
 #include <Arduino.h>
 
