@@ -18,12 +18,11 @@
 U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 
 
-
 class UserInterface {
 
 
 public:
-    static uint8_t cursor, sector;
+    static uint8_t cursor, sector, mode;
 
 private:
 
@@ -46,7 +45,7 @@ private:
         String strDsp = String(msg(7));
         strDsp += amperage;
 
-        u8g2.setCursor(2, 16);
+        u8g2.setCursor(60, 32);
         u8g2.print(strDsp);
 
     }
@@ -70,23 +69,38 @@ public:
     }
 
 
-    void draw(uiData *data, MenuBackend menu) {
+    void draw(SmartCharger *smartCharger) {
 
         u8g2.clearBuffer();
-//        u8g2.firstPage();
-//        do {
-            u8g2.setCursor(2, 16);
-            u8g2.print(msg(cursor));
-            if (sector == 0) {
+
+        u8g2.setCursor(2, 16);
+        u8g2.print(msg(cursor));
+
+        switch (sector) {
+            case 0:
                 u8g2.setCursor(2, 32);
                 u8g2.print(msg(1));
                 u8g2.print(VERSION);
-            }
+                break;
 
-            if (sector == 10) {
+            case 10:
+                smartCharger->start();
+                showAmperage(smartCharger->getData()->load);
+                showVoltages(smartCharger->getData()->volt);
+                break;
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+            case 23:
+                smartCharger->setMode(sector - 15);
+                break;
+        }
 
-            }
-//        } while ( u8g2.nextPage() );
         u8g2.sendBuffer();
     }
 

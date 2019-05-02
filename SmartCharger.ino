@@ -12,7 +12,7 @@
 
 
 #define BTN_MAX 1
-#define BTN_BOUNCE_TIME 200
+#define BTN_BOUNCE_TIME 450
 
 #include <Wire.h>
 #include "lib/SmartCharger.h"
@@ -54,10 +54,11 @@ void loop() {
 
     btn.listen();
 
+
+
     if (btn.click(btnSet)) {
         mn.doEnter();
         Serial.println(F("Button active"));
-        btn.done();
     }
 
     if (btn.isEncoderUp()) {
@@ -75,7 +76,7 @@ void loop() {
 
     if (offset > 300) {
         smc.charge(offset);
-        ui.draw(smc.getData(), mn.getMB());
+        ui.draw(&smc);
         offset = 0;
     }
 

@@ -14,7 +14,7 @@
 #endif
 
 #ifndef BTN_TOGETHER_MAX
-#define BTN_TOGETHER_MAX 1
+#define BTN_TOGETHER_MAX 2
 #endif
 
 

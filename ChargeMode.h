@@ -30,7 +30,7 @@ const chargeMode aci6 PROGMEM = {1, 36, 255, 36, 200, 23,};
 
 const uint8_t chargeModeLen = 8;
 
-const chargeMode modeTable[chargeModeLen] PROGMEM = {
+const chargeMode modeTable[] PROGMEM = {
         // LiIon
         Lis1, lis2, lis3, lis4,
         // NiMH
@@ -41,11 +41,10 @@ const chargeMode modeTable[chargeModeLen] PROGMEM = {
 
 };
 
-
-chargeMode getMode(uint8_t i) {
-    chargeMode thisItem;
-    PROGMEM_readAnything(&modeTable[i], thisItem);
-    return thisItem;
+chargeMode thisModeItem;
+chargeMode *getMode(uint8_t i) {
+    PROGMEM_readAnything(&modeTable[i], thisModeItem);
+    return &thisModeItem;
 }
 
 

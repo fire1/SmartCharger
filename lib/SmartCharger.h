@@ -139,9 +139,31 @@ public:
  *
  * @param mode
  */
-    void setMode(chargeMode *mode) {
-        this->mode = mode;
+    void setMode(uint8_t mode) {
+        this->mode = getMode(1);
+        Serial.print(F("Mode: "));
+        Serial.print(mode);
+        Serial.print(F(" mT:"));
+        Serial.print(this->mode->maxTime);
+        Serial.print(F(" sV:"));
+        Serial.print(this->mode->setVolt);
+        Serial.print(F(" sA:"));
+        Serial.print(this->mode->setLoad);
+        Serial.print(F(" mV:"));
+        Serial.print(this->mode->maxVolt);
+        Serial.print(F(" mA:"));
+        Serial.print(this->mode->maxLoad);
+        Serial.print(F(" Nm:"));
+        Serial.print(this->mode->pgmName);
+        Serial.println();
+        delay(300);
+
     }
+
+    void start(){
+
+    }
+
 
     void charge(uint16_t offset) {
         calculate(offset);

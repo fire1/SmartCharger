@@ -58,17 +58,17 @@ public:
 
         menuTypeLi.add(lis1);
         lis1.addRight(lis2).addRight(lis3).addRight(lis4).addRight(lis1);
-        lis1.add(menuCharge).add(lis1);
-        lis2.add(menuCharge).add(lis2);
-        lis3.add(menuCharge).add(lis3);
-        lis4.add(menuCharge).add(lis4);
+        lis1.add(menuCharge).add(menuSelect);
+        lis2.add(menuCharge).add(menuSelect);
+        lis3.add(menuCharge).add(menuSelect);
+        lis4.add(menuCharge).add(menuSelect);
 
 
         menuTypeNi.add(nis2);
         nis2.addRight(nis4).addRight(nis8).addRight(nis2);
-        nis2.add(menuCharge).add(nis2);
-        nis4.add(menuCharge).add(nis4);
-        nis8.add(menuCharge).add(nis8);
+        nis2.add(menuCharge).add(menuSelect);
+        nis4.add(menuCharge).add(menuSelect);
+        nis8.add(menuCharge).add(menuSelect);
 
         menuTypeAc.add(aci6).add(menuCharge).add(aci6);
 
