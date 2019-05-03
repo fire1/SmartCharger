@@ -113,7 +113,7 @@ void loop() {
             analogWrite(pinVoltageControl, val);
             encoderLast = val;
             encoderPos = val;
-            Serial.print(F("Output is "));
+            Serial.print(F("VoltOutput is "));
             Serial.println(val);
         }
     }

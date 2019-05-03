@@ -1939,7 +1939,7 @@ endfunction()
 #
 # setup_arduino_size_script(OUTPUT_VAR)
 #
-#        OUTPUT_VAR - Output variable that will contain the script path
+#        OUTPUT_VAR - VoltOutput variable that will contain the script path
 #
 # Generates script used to display the firmware size.
 #=============================================================================#

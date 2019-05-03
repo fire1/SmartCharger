@@ -15,8 +15,9 @@
 
 
 #endif
-U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
-
+//U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
+U8G2_SSD1306_128X32_UNIVISION_2_2ND_HW_I2C u8g2(U8G2_R0);
+//U8G2_SSD1306_128X32_UNIVISION_2_HW_I2C u8g2(U8G2_R0);
 
 class UserInterface {
 
@@ -72,36 +73,39 @@ public:
     void draw(SmartCharger *smartCharger) {
 
         u8g2.clearBuffer();
+        u8g2.firstPage();
+        do {
+            u8g2.setCursor(2, 16);
+            u8g2.print(msg(cursor));
 
-        u8g2.setCursor(2, 16);
-        u8g2.print(msg(cursor));
+            switch (sector) {
+                case 0:
+                    u8g2.setCursor(2, 32);
+                    u8g2.print(msg(1));
+                    u8g2.print(VERSION);
+                    break;
 
-        switch (sector) {
-            case 0:
-                u8g2.setCursor(2, 32);
-                u8g2.print(msg(1));
-                u8g2.print(VERSION);
-                break;
+                case 10:
+                    smartCharger->start();
+                    showAmperage(smartCharger->getData()->load);
+                    showVoltages(smartCharger->getData()->volt);
+                    break;
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                case 20:
+                case 21:
+                case 22:
+                case 23:
+                    smartCharger->setMode(sector - 15);
+                    break;
+            }
+        } while (u8g2.nextPage());
 
-            case 10:
-                smartCharger->start();
-                showAmperage(smartCharger->getData()->load);
-                showVoltages(smartCharger->getData()->volt);
-                break;
-            case 15:
-            case 16:
-            case 17:
-            case 18:
-            case 19:
-            case 20:
-            case 21:
-            case 22:
-            case 23:
-                smartCharger->setMode(sector - 15);
-                break;
-        }
 
-        u8g2.sendBuffer();
+//        u8g2.sendBuffer();
     }
 
 };

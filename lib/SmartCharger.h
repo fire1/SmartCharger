@@ -6,6 +6,14 @@
 #define SmartCharger_h
 
 #include <Arduino.h>
+#include <PID_v1.h>
+
+#ifndef PID_v1_h
+
+#include "../../libraries/PID/PID_v1.h"
+
+#endif
+
 #include "../ChargeMode.h"
 
 #ifndef PIN_INP_AMP
@@ -26,6 +34,15 @@
 #define PIN_VOLT A2
 #define PIN_LOAD A0
 
+//Define Variables we'll be connecting to
+double VoltPoint, VoltInput, VoltOutput,
+        LoadInput, LoadOutput, LoadPoint;
+//Define the aggressive and conservative Tuning Parameters
+double aggKp = 4, aggKi = 0.2, aggKd = 1;
+double consKp = 1, consKi = 0.05, consKd = 0.25;
+PID piv(&VoltInput, &VoltOutput, &VoltPoint, consKp, consKi, consKd, DIRECT);
+PID pil(&LoadInput, &LoadOutput, &LoadPoint, consKp, consKi, consKd, DIRECT);
+
 
 struct uiData {
     float volt;
@@ -33,8 +50,6 @@ struct uiData {
     uint8_t step;
     uint8_t error;
 };
-
-typedef void (*charging)(chargeMode);
 
 
 class SmartCharger {
@@ -83,7 +98,8 @@ private:
         uint16_t load = uint16_t(readContainerAmp / offset);
         uint16_t amperage = (uint16_t) map(load, 70, 250, 700, 1250);
 
-
+        VoltInput = volt;
+        LoadInput = load;
 
         //  debug info
 //        Serial.print(F(" VRD: "));
@@ -106,8 +122,23 @@ private:
 
     void control() {
         if (mode) {
-            if (mode->maxVolt < volt) {
+            double gap;
+            gap = abs(VoltPoint - VoltInput); //distance away from setpoint
+            if (gap < 10) {
+                //we're close to setpoint, use conservative tuning parameters
+                piv.SetTunings(consKp, consKi, consKd);
+            } else {
+                //we're far from setpoint, use aggressive tuning parameters
+                piv.SetTunings(aggKp, aggKi, aggKd);
+            }
 
+            gap = abs(LoadPoint - LoadInput);
+            if (gap < 10) {
+                //we're close to setpoint, use conservative tuning parameters
+                pil.SetTunings(consKp, consKi, consKd);
+            } else {
+                //we're far from setpoint, use aggressive tuning parameters
+                pil.SetTunings(aggKp, aggKi, aggKd);
             }
 
             if (mode->maxLoad < load) {
@@ -115,6 +146,13 @@ private:
             }
 
             data->step++;
+
+            piv.Compute();
+            analogWrite(PIN_PSV_PWM, VoltOutput);
+
+
+            pil.Compute();
+            analogWrite(PIN_GND_PWM, LoadOutput);
         }
     }
 
@@ -123,6 +161,15 @@ public:
     SmartCharger() {
 
     }
+
+    // Start charging
+    void start() {
+        if (mode) {
+            VoltPoint = mode->setVolt;
+            LoadPoint = mode->setLoad;
+        }
+    }
+
 
     void begin() {
         timers();
@@ -133,6 +180,12 @@ public:
         pinMode(PIN_VOLT, INPUT_PULLUP);
 
         digitalWrite(PIN_LOAD, HIGH);
+
+        piv.SetMode(AUTOMATIC);
+        piv.SetSampleTime(300);
+
+        pil.SetMode(AUTOMATIC);
+        pil.SetSampleTime(300);
     }
 
 /**
@@ -157,10 +210,6 @@ public:
         Serial.print(this->mode->pgmName);
         Serial.println();
         delay(300);
-
-    }
-
-    void start(){
 
     }
 
