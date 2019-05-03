@@ -54,8 +54,8 @@ struct uiData {
 
 class SmartCharger {
 private:
+    boolean started = false;
     volatile uint8_t offsetFor = 0;
-
     uint16_t volt, load;
     unsigned long readContainerVlt, readContainerAmp;
     uiData *data;
@@ -97,22 +97,23 @@ private:
 
         uint16_t load = uint16_t(readContainerAmp / offset);
         uint16_t amperage = (uint16_t) map(load, 70, 250, 700, 1250);
-
+//
         VoltInput = volt;
         LoadInput = load;
 
-        //  debug info
-//        Serial.print(F(" VRD: "));
-//        Serial.print(volt);
-//
-//        Serial.print(F(" VLT: "));
-//        Serial.print(voltage);
-//
-//        Serial.print(F("  LDS: "));
-//        Serial.print(load);
-//
-//        Serial.print(F("  AMP: "));
-//        Serial.println(amperage);
+#ifdef DEBUG
+        Serial.print(F(" VRD: "));
+        Serial.print(volt);
+
+        Serial.print(F(" VLT: "));
+        Serial.print(voltage);
+
+        Serial.print(F("  LDS: "));
+        Serial.print(load);
+
+        Serial.print(F("  AMP: "));
+        Serial.println(amperage);
+#endif
 
         data->volt = voltage * 0.01;
         data->load = amperage * 0.001;
@@ -121,26 +122,26 @@ private:
 
 
     void control() {
-        if (mode) {
+        if (mode && started) {
             double gap;
-            gap = abs(VoltPoint - VoltInput); //distance away from setpoint
+            gap = abs(VoltPoint - VoltInput);
+
             if (gap < 10) {
-                //we're close to setpoint, use conservative tuning parameters
                 piv.SetTunings(consKp, consKi, consKd);
             } else {
-                //we're far from setpoint, use aggressive tuning parameters
                 piv.SetTunings(aggKp, aggKi, aggKd);
             }
 
             gap = abs(LoadPoint - LoadInput);
             if (gap < 10) {
-                //we're close to setpoint, use conservative tuning parameters
                 pil.SetTunings(consKp, consKi, consKd);
             } else {
-                //we're far from setpoint, use aggressive tuning parameters
                 pil.SetTunings(aggKp, aggKi, aggKd);
             }
 
+            if (mode->maxVolt < volt) {
+
+            }
             if (mode->maxLoad < load) {
 
             }
@@ -165,6 +166,7 @@ public:
     // Start charging
     void start() {
         if (mode) {
+            started = true;
             VoltPoint = mode->setVolt;
             LoadPoint = mode->setLoad;
         }
@@ -194,6 +196,7 @@ public:
  */
     void setMode(uint8_t mode) {
         this->mode = loadChargeMode(1);
+#ifdef DEBUG
         Serial.print(F("Mode: "));
         Serial.print(mode);
         Serial.print(F(" mT:"));
@@ -210,6 +213,7 @@ public:
         Serial.print(this->mode->pgmName);
         Serial.println();
         delay(300);
+#endif
 
     }
 

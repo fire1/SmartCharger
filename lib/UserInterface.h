@@ -15,11 +15,21 @@
 
 
 #endif
+const uint8_t u8g2_font_battery19_tn[167] U8G2_FONT_SECTION("u8g2_font_battery19_tn") =
+        "\10\0\3\3\4\5\1\1\5\10\23\0\0\23\0\23\0\0\0\0\0\0\212\60\13\70\317\42\35\304\372\377"
+                "\371 \61\17\70\317\42\35\304\372\177\241H(\342\203\0\62\23\70\317\42\35\304\372/\24\11E,\241H"
+                "(\342\203\0\63\27\70\317\42\35\304\372\205\42\241\210%\24\11E,\241H(\342\203\0\64\33\70\317\42"
+                "\35\304\272P$\24\261\204\42\241\210%\24\11E,\241H(\342\203\0\65\37\70\317\42\35\304\22\212\204"
+                "\42\226P$\24\261\204\42\241\210%\24\11E,\241H(\342\203\0\66\5\0\316\0\67\5\0\316\0\0"
+                "\0\0\4\377\377\0";
+
 //U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 U8G2_SSD1306_128X32_UNIVISION_2_2ND_HW_I2C u8g2(U8G2_R0);
 //U8G2_SSD1306_128X32_UNIVISION_2_HW_I2C u8g2(U8G2_R0);
 
 class UserInterface {
+    String strDsp;
+    char carFloat[4];
 
 
 public:
@@ -27,6 +37,12 @@ public:
 
 private:
 
+/**
+ * Converts float to lower decimal
+ * @param value
+ * @param output
+ * @return
+ */
     char displayFloat(float value, char *output) {
         if (value < -99) {
             value = -99;
@@ -40,27 +56,41 @@ private:
         sprintf(output, "%02d.%1d", dig1, dig2);
     }
 
-
+/**
+ * Shows amperage on screen
+ * @param amperage
+ */
     void showAmperage(float amperage) {
 
-        String strDsp = String(msg(7));
-        strDsp += amperage;
+        displayFloat(amperage,carFloat);
+        strDsp = String(msg(7));
+        strDsp += carFloat;
 
-        u8g2.setCursor(60, 32);
+        u8g2.setCursor(2, 16);
         u8g2.print(strDsp);
 
     }
-
+/**
+ * Shows voltages on screen
+ * @param voltage
+ */
     void showVoltages(float voltage) {
 
-
-        String strDsp = String(msg(6));
+        displayFloat(voltage,carFloat);
+        strDsp = String(msg(6));
         strDsp += voltage;
 
         u8g2.setCursor(2, 32);
         u8g2.print(strDsp);
     }
 
+/**
+ * Shows title from this->cursor on screen
+ */
+    void showTitle() {
+        u8g2.setCursor(2, 16);
+        u8g2.print(msg(cursor));
+    }
 
 public:
 
@@ -69,17 +99,19 @@ public:
         u8g2.setFont(u8g2_font_10x20_tr);
     }
 
-
+/**
+ * Draws UI on screen
+ * @param smartCharger
+ */
     void draw(SmartCharger *smartCharger) {
 
         u8g2.clearBuffer();
         u8g2.firstPage();
         do {
-            u8g2.setCursor(2, 16);
-            u8g2.print(msg(cursor));
-
             switch (sector) {
+                default:
                 case 0:
+                    this->showTitle();
                     u8g2.setCursor(2, 32);
                     u8g2.print(msg(1));
                     u8g2.print(VERSION);
@@ -89,6 +121,7 @@ public:
                     smartCharger->start();
                     showAmperage(smartCharger->getData()->load);
                     showVoltages(smartCharger->getData()->volt);
+                    u8g2.setFont(u8g2_font_battery19_tn);
                     break;
                 case 15:
                 case 16:
@@ -99,13 +132,12 @@ public:
                 case 21:
                 case 22:
                 case 23:
+                    this->showTitle();
                     smartCharger->setMode(sector - 15);
                     break;
             }
         } while (u8g2.nextPage());
 
-
-//        u8g2.sendBuffer();
     }
 
 };

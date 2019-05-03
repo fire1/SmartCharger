@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
 
+#define DEBUG
 
 #define VERSION 1
 
