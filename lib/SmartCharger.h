@@ -140,7 +140,7 @@ public:
  * @param mode
  */
     void setMode(uint8_t mode) {
-        this->mode = getMode(1);
+        this->mode = loadChargeMode(1);
         Serial.print(F("Mode: "));
         Serial.print(mode);
         Serial.print(F(" mT:"));

@@ -1,12 +1,5 @@
-//
-// Created by Angel Zaprianov on 2019-04-30.
-//
-
-#ifndef SMART_CHARGER_CHARGE_MODE_H
-#define SMART_CHARGER_CHARGE_MODE_H
 
 #include <Arduino.h>
-#include "lib/ProgramMem.h"
 
 struct chargeMode {
     uint8_t maxTime;
@@ -17,10 +10,9 @@ struct chargeMode {
     uint8_t pgmName; // index of PROGMEM name
 };
 
-//
-// Configuration table for charging modes
+
 const chargeMode chargeModeTable[] PROGMEM = {
-        {1, 36, 255, 36, 200, 15,},  // lis1
+        {1, 36, 255, 36, 200, 15},  // lis1
         {1, 36, 255, 36, 200, 16,}, // lis2
         {1, 36, 255, 36, 200, 17,}, // lis3
         {1, 36, 255, 36, 200, 18,}, // lis4
@@ -31,19 +23,38 @@ const chargeMode chargeModeTable[] PROGMEM = {
         {1, 36, 255, 36, 200, 23,}, // aci6
 };
 
+template <typename T> void PROGMEM_readAnything(const T *sce, T &dest) {
+    memcpy_P(&dest, sce, sizeof(T));
+}
 
 
 
 chargeMode chargeModeBuffer;
-/**
- *  Load charge mode form flash memory
- * @param index
- * @return
- */
-chargeMode *loadChargeMode(uint8_t index) {
-    PROGMEM_readAnything((chargeMode *) ((&chargeModeTable[index])), chargeModeBuffer);
+
+chargeMode *loadChargeMode(uint8_t i) {
+    PROGMEM_readAnything((chargeMode *) ((&chargeModeTable[i])), chargeModeBuffer);
     return &chargeModeBuffer;
 }
 
 
-#endif //SMARTCHARGER_CHARGEMODE_H
+void setup() {
+
+    Serial.begin(9600);
+}
+
+chargeMode *test;
+
+void loop() {
+
+    test = loadChargeMode(1);
+    Serial.print(test->maxTime);
+    Serial.print(F(" / "));
+    Serial.print(test->setVolt);
+    Serial.print(F(" / "));
+    Serial.print(test->setLoad);
+    Serial.print(F(" / "));
+    Serial.print(test->pgmName);
+    Serial.println();
+
+    delay(500);
+}
