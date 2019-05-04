@@ -34,15 +34,6 @@
 #define PIN_VOLT A2
 #define PIN_LOAD A0
 
-//Define Variables we'll be connecting to
-double VoltPoint, VoltInput, VoltOutput,
-        LoadInput, LoadOutput, LoadPoint;
-//Define the aggressive and conservative Tuning Parameters
-double aggKp = 4, aggKi = 0.2, aggKd = 1;
-double consKp = 1, consKi = 0.05, consKd = 0.25;
-PID piv(&VoltInput, &VoltOutput, &VoltPoint, consKp, consKi, consKd, DIRECT);
-PID pil(&LoadInput, &LoadOutput, &LoadPoint, consKp, consKi, consKd, DIRECT);
-
 
 struct uiData {
     float volt;
@@ -55,9 +46,12 @@ struct uiData {
 class SmartCharger {
 private:
     boolean started = false;
+    const uint8_t readsPinsNum = 4;
     volatile uint8_t offsetFor = 0;
-    uint16_t volt, load;
+    uint16_t inVolt, inLoad;
+    uint8_t setVolt, setLoad;
     unsigned long readContainerVlt, readContainerAmp;
+    unsigned long vltInputRead = 0, ampInputRead = 0;
     uiData *data;
     chargeMode *mode;
 
@@ -76,72 +70,41 @@ private:
     }
 
 
-    void calculate(uint16_t offset) {
-
-        uint16_t volt = uint16_t(readContainerVlt / offset);
-        uint16_t voltage = (uint16_t) map(volt, 3, 720, 260, 1600);
-
-        uint16_t load = uint16_t(readContainerAmp / offset);
-        uint16_t amperage = (uint16_t) map(load, 70, 250, 700, 1250);
-//
-        VoltInput = volt;
-        LoadInput = load;
-
-#ifdef DEBUG
-        Serial.print(F(" VRD: "));
-        Serial.print(volt);
-
-        Serial.print(F(" VLT: "));
-        Serial.print(voltage);
-
-        Serial.print(F("  LDS: "));
-        Serial.print(load);
-
-        Serial.print(F("  AMP: "));
-        Serial.println(amperage);
-#endif
-
-        data->volt = voltage * 0.01;
-        data->load = amperage * 0.001;
-
-    }
-
-
     void control() {
-        if (mode && started) {
-            double gap;
-            gap = abs(VoltPoint - VoltInput);
+        if (mode && started || true) {
+//            double gap;
+//            gap = abs(VoltPoint - VoltInput);
+//
+//            if (gap < 10) {
+//                piv.SetTunings(consKp, consKi, consKd);
+//            } else {
+//                piv.SetTunings(aggKp, aggKi, aggKd);
+//            }
+//
+//            gap = abs(LoadPoint - LoadInput);
+//            if (gap < 10) {
+//                pil.SetTunings(consKp, consKi, consKd);
+//            } else {
+//                pil.SetTunings(aggKp, aggKi, aggKd);
+//            }
 
-            if (gap < 10) {
-                piv.SetTunings(consKp, consKi, consKd);
-            } else {
-                piv.SetTunings(aggKp, aggKi, aggKd);
-            }
-
-            gap = abs(LoadPoint - LoadInput);
-            if (gap < 10) {
-                pil.SetTunings(consKp, consKi, consKd);
-            } else {
-                pil.SetTunings(aggKp, aggKi, aggKd);
-            }
-
-            if (mode->maxVolt < volt) {
-
-            }
-            if (mode->maxLoad < load) {
+            if (mode->maxVolt < inVolt) {
 
             }
+            if (mode->maxLoad < inLoad) {
 
-            data->step++;
+            }
 
-            piv.Compute();
-            analogWrite(PIN_PSV_PWM, VoltOutput);
+//            data->step++;
 
 
-            pil.Compute();
-            analogWrite(PIN_GND_PWM, LoadOutput);
+
+
+            analogWrite(PIN_PSV_PWM, setVolt);
+            analogWrite(PIN_GND_PWM, 255);
         }
     }
+
 
 public:
 
@@ -153,8 +116,8 @@ public:
     void start() {
         if (mode) {
             started = true;
-            VoltPoint = mode->setVolt;
-            LoadPoint = mode->setLoad;
+            setVolt = mode->setVolt;
+            setLoad = mode->setLoad;
         }
     }
 
@@ -168,12 +131,6 @@ public:
         pinMode(PIN_VOLT, INPUT_PULLUP);
 
         digitalWrite(PIN_LOAD, HIGH);
-
-        piv.SetMode(AUTOMATIC);
-        piv.SetSampleTime(300);
-
-        pil.SetMode(AUTOMATIC);
-        pil.SetSampleTime(300);
     }
 
 /**
@@ -186,42 +143,63 @@ public:
     }
 
 
-    void charge(uint16_t offset) {
-        calculate(offset);
+    void charge(uint16_t readCount) {
+        inVolt = uint16_t(this->readContainerVlt / readCount);
+        uint16_t voltage = (uint16_t) map(inVolt, 225, 1094, 320, 1440);
+
+        inLoad = uint16_t(this->readContainerAmp / readCount);
+        uint16_t amperage = (uint16_t) map(inLoad, 70, 250, 700, 1250);
+        this->readContainerVlt = 0;
+        this->readContainerAmp = 0;
+
+        data->volt = voltage * 0.01;
+        data->load = amperage * 0.001;
+
+
+#ifdef DEBUG
+
+        Serial.print(F(" i: "));
+        Serial.print(readCount);
+        Serial.print(F(" / V rd: "));
+        Serial.print(inVolt);
+        Serial.print(F(" V: "));
+        Serial.print(data->volt);
+        Serial.print(F(" PWM: "));
+        Serial.print(setVolt);
+        Serial.print(F(" /  A rd: "));
+        Serial.print(inLoad);
+        Serial.print(F("  A: "));
+        Serial.print(data->load);
+        Serial.print(F(" PWM: "));
+        Serial.print(setLoad);
+        Serial.println();
+
+#endif
+
         control();
-    //        if (mode) {
-    //#ifdef DEBUG
-    //            Serial.print(F("Mode: "));
-    //                Serial.print(mode);
-    //                Serial.print(F(" mT:"));
-    //                Serial.print(this->mode->maxTime);
-    //                Serial.print(F(" sV:"));
-    //                Serial.print(this->mode->setVolt);
-    //                Serial.print(F(" sA:"));
-    //                Serial.print(this->mode->setLoad);
-    //                Serial.print(F(" mV:"));
-    //                Serial.print(this->mode->maxVolt);
-    //                Serial.print(F(" mA:"));
-    //                Serial.print(this->mode->maxLoad);
-    //                Serial.print(F(" Nm:"));
-    //                Serial.print(this->mode->pgmName);
-    //                Serial.println();
-    //                delay(300);
-    //#endif
-    //        }
+
     }
 
     void measure() {
 
-        const uint8_t reads = 4;
-        unsigned long vlt = 0, amp = 0;
-        for (offsetFor = 0; offsetFor < reads; ++offsetFor) {
-            vlt += analogRead(PIN_VOLT);
-            amp += analogRead(PIN_LOAD);
+        if (Serial.available()) {
+            int val = Serial.parseInt(); //read int or parseFloat for ..float...
+            if (val > 0) {
+                setVolt = uint8_t(val);
+                setLoad = 255;
+                Serial.print(F("VoltOutput is "));
+                Serial.println(val);
+            }
         }
 
-        readContainerVlt = vlt / (reads - 1) + readContainerVlt;
-        readContainerAmp = amp / (reads - 1) + readContainerAmp;
+        vltInputRead = 0, ampInputRead = 0;
+        for (offsetFor = 0; offsetFor < readsPinsNum; ++offsetFor) {
+            vltInputRead += analogRead(PIN_VOLT);
+            ampInputRead += analogRead(PIN_LOAD);
+        }
+
+        this->readContainerVlt = vltInputRead / (readsPinsNum - 1) + this->readContainerVlt;
+        this->readContainerAmp = ampInputRead / (readsPinsNum - 1) + this->readContainerAmp;
     }
 
     uiData *getData() {

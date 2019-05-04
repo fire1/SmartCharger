@@ -756,7 +756,7 @@ endmacro()
 #
 #         TARGET_NAME - The base name of the user settings
 #         PREFIX      - The prefix name used for generator settings
-#         SUFFIX_XX   - List of suffixes to load
+#         SUFFIX_XX   - List of suffixes to inLoad
 #
 #  Loads a list of user settings into the generators scope. User settings have
 #  the following syntax:
@@ -1560,7 +1560,7 @@ endfunction()
 # load_arduino_style_settings(SETTINGS_LIST SETTINGS_PATH)
 #
 #      SETTINGS_LIST - Variable name of settings list
-#      SETTINGS_PATH - File path of settings file to load.
+#      SETTINGS_PATH - File path of settings file to inLoad.
 #
 # Load a Arduino style settings file into the cache.
 #

@@ -15,13 +15,15 @@ struct chargeMode {
     uint8_t maxVolt;
     uint8_t maxLoad;
     uint8_t pgmName; // index of PROGMEM name
+    uint16_t uiV[4];
+    uint16_t uiA[4];
 };
 
 //
 // Configuration table for charging modes
 const chargeMode chargeModeTable[] PROGMEM = {
-        {1, 36, 255, 36, 200, 15,},  // lis1
-        {1, 36, 255, 36, 200, 16,}, // lis2
+        {1, 50, 255, 50, 200, 15, {402, 438, 370, 422}, {70, 250, 700, 1250},},  // lis1
+        {1, 36, 255, 36, 200, 16, {225, 1094, 320, 1440}, {70, 250, 700, 1250}}, // lis2
         {1, 36, 255, 36, 200, 17,}, // lis3
         {1, 36, 255, 36, 200, 18,}, // lis4
         {1, 36, 255, 36, 200, 19,}, // nis2
@@ -32,9 +34,8 @@ const chargeMode chargeModeTable[] PROGMEM = {
 };
 
 
-
-
 chargeMode chargeModeBuffer;
+
 /**
  *  Load charge mode form flash memory
  * @param index

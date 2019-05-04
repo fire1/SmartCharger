@@ -121,7 +121,7 @@ void loop() {
     if (indexRead > 300) {
         uint16_t volt = readContainerVlt / indexRead;
         uint16_t voltage = map(volt, 3, 720, 260, 1600);
-//        float voltage = (volt * 22.0 / 1023.0);
+//        float voltage = (inVolt * 22.0 / 1023.0);
 
         Serial.print(F(" PWM: "));
         Serial.print(encoderPos);

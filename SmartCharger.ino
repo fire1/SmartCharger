@@ -13,7 +13,7 @@
 
 
 #define BTN_MAX 1
-#define BTN_BOUNCE_TIME 400
+#define BTN_BOUNCE_TIME 300
 
 #include <Wire.h>
 #include "lib/SmartCharger.h"
@@ -48,13 +48,11 @@ void setup() {
     digitalWrite(encoderPinC, HIGH);
 }
 
-volatile uint16_t offset;
+volatile uint16_t offsetMainLoop;
 
 
 void loop() {
-
     btn.listen();
-
 
     if (btn.click(btnSet)) {
         mn.doEnter();
@@ -72,14 +70,14 @@ void loop() {
     }
 
 
-    if (offset > BTN_BOUNCE_TIME) {
-        smc.charge(offset);
+    if (offsetMainLoop > BTN_BOUNCE_TIME) {
+        smc.charge(offsetMainLoop);
         ui.draw(&smc);
-        offset = 0;
+        offsetMainLoop = 0;
+
     }
     smc.measure();
-
-    offset++;
+    offsetMainLoop++;
 }
 
 
