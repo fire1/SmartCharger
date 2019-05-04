@@ -70,7 +70,7 @@ public:
         nis4.add(menuCharge).add(menuSelect);
         nis8.add(menuCharge).add(menuSelect);
 
-        menuTypeAc.add(aci6).add(menuCharge).add(aci6);
+        menuTypeAc.add(aci6).add(menuCharge).add(menuSelect);
 
 //        menuTypeOt.add(menuCharge);
 

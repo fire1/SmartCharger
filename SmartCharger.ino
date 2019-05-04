@@ -13,7 +13,7 @@
 
 
 #define BTN_MAX 1
-#define BTN_BOUNCE_TIME 450
+#define BTN_BOUNCE_TIME 400
 
 #include <Wire.h>
 #include "lib/SmartCharger.h"
@@ -24,7 +24,6 @@
 #include "lib/MenuStructure.h"
 
 #include "ChargeMode.h"
-
 
 const uint8_t encoderPinA = 8;
 const uint8_t encoderPinB = 7;
@@ -51,10 +50,10 @@ void setup() {
 
 volatile uint16_t offset;
 
+
 void loop() {
 
     btn.listen();
-
 
 
     if (btn.click(btnSet)) {
@@ -64,22 +63,21 @@ void loop() {
 
     if (btn.isEncoderUp()) {
         mn.moveLeft();
-        offset = 301;
         Serial.println(F("Up"));
     }
 
     if (btn.isEncoderDw()) {
         mn.goRight();
-        offset = 301;
         Serial.println(F("Dw"));
     }
 
 
-    if (offset > 300) {
+    if (offset > BTN_BOUNCE_TIME) {
         smc.charge(offset);
         ui.draw(&smc);
         offset = 0;
     }
+    smc.measure();
 
     offset++;
 }

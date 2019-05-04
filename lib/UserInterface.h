@@ -24,12 +24,15 @@ const uint8_t u8g2_font_battery19_tn[167] U8G2_FONT_SECTION("u8g2_font_battery19
                 "\0\0\4\377\377\0";
 
 //U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
-U8G2_SSD1306_128X32_UNIVISION_2_2ND_HW_I2C u8g2(U8G2_R0);
-//U8G2_SSD1306_128X32_UNIVISION_2_HW_I2C u8g2(U8G2_R0);
+U8G2_SSD1306_128X32_UNIVISION_2_HW_I2C u8g2(U8G2_R0);
+
+
+const uint8_t lcdRow1 = 14;
+const uint8_t lcdRow2 = 28;
+const uint8_t *defFont = u8g2_font_crox3h_tf;
 
 class UserInterface {
-    String strDsp;
-    char carFloat[4];
+    char char_3[4];
 
 
 public:
@@ -56,39 +59,43 @@ private:
         sprintf(output, "%02d.%1d", dig1, dig2);
     }
 
+
+
+/**
+ * Shows voltages on screen
+ * @param voltage
+ */
+    void showVoltages(float voltage) {
+        displayFloat(voltage, char_3);
+        u8g2.setCursor(2, lcdRow1);
+        u8g2.print(msg(6));
+        u8g2.print(char_3);
+    }
+
 /**
  * Shows amperage on screen
  * @param amperage
  */
     void showAmperage(float amperage) {
 
-        displayFloat(amperage,carFloat);
-        strDsp = String(msg(7));
-        strDsp += carFloat;
-
-        u8g2.setCursor(2, 16);
-        u8g2.print(strDsp);
+        displayFloat(amperage, char_3);
+        u8g2.setCursor(2, lcdRow2);
+        u8g2.print(msg(7));
+        u8g2.print(char_3);
 
     }
-/**
- * Shows voltages on screen
- * @param voltage
- */
-    void showVoltages(float voltage) {
 
-        displayFloat(voltage,carFloat);
-        strDsp = String(msg(6));
-        strDsp += voltage;
-
-        u8g2.setCursor(2, 32);
-        u8g2.print(strDsp);
+    void showBattery(){
+        u8g2.setFont(u8g2_font_battery19_tn);
+        u8g2.setCursor(94, 26);
+        u8g2.print(0);
+        u8g2.setFont(defFont);
     }
-
 /**
  * Shows title from this->cursor on screen
  */
     void showTitle() {
-        u8g2.setCursor(2, 16);
+        u8g2.setCursor(2, lcdRow1);
         u8g2.print(msg(cursor));
     }
 
@@ -96,7 +103,7 @@ public:
 
     void begin() {
         u8g2.begin();
-        u8g2.setFont(u8g2_font_10x20_tr);
+        u8g2.setFont(defFont);
     }
 
 /**
@@ -108,36 +115,47 @@ public:
         u8g2.clearBuffer();
         u8g2.firstPage();
         do {
-            switch (sector) {
-                default:
-                case 0:
-                    this->showTitle();
-                    u8g2.setCursor(2, 32);
+            ui(smartCharger);
+        } while (u8g2.nextPage());
+    }
+
+protected:
+    void ui(SmartCharger *smartCharger) {
+        switch (sector) {
+            default:
+            case 0:
+
+                u8g2.drawFrame(0, 0, u8g2.getDisplayWidth(), u8g2.getDisplayHeight());
+                this->showTitle();
+
+                if (cursor == 0) {
+                    u8g2.setCursor(2, lcdRow2);
                     u8g2.print(msg(1));
                     u8g2.print(VERSION);
-                    break;
+                }
+                break;
 
-                case 10:
-                    smartCharger->start();
-                    showAmperage(smartCharger->getData()->load);
-                    showVoltages(smartCharger->getData()->volt);
-                    u8g2.setFont(u8g2_font_battery19_tn);
-                    break;
-                case 15:
-                case 16:
-                case 17:
-                case 18:
-                case 19:
-                case 20:
-                case 21:
-                case 22:
-                case 23:
-                    this->showTitle();
-                    smartCharger->setMode(sector - 15);
-                    break;
-            }
-        } while (u8g2.nextPage());
+            case 10:
+                smartCharger->start();
 
+                showAmperage(smartCharger->getData()->load);
+                showVoltages(smartCharger->getData()->volt);
+                showBattery();
+
+                break;
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+            case 23:
+                this->showTitle();
+                smartCharger->setMode(sector - 15);
+                break;
+        }
     }
 
 };

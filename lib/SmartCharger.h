@@ -76,20 +76,6 @@ private:
     }
 
 
-    void measure() {
-
-        const uint8_t reads = 4;
-        unsigned long vlt = 0, amp = 0;
-        for (offsetFor = 0; offsetFor < reads; ++offsetFor) {
-            vlt += analogRead(PIN_VOLT);
-            amp += analogRead(PIN_LOAD);
-        }
-
-        readContainerVlt = vlt / (reads - 1) + readContainerVlt;
-        readContainerAmp = amp / (reads - 1) + readContainerAmp;
-    }
-
-
     void calculate(uint16_t offset) {
 
         uint16_t volt = uint16_t(readContainerVlt / offset);
@@ -196,24 +182,6 @@ public:
  */
     void setMode(uint8_t mode) {
         this->mode = loadChargeMode(1);
-#ifdef DEBUG
-        Serial.print(F("Mode: "));
-        Serial.print(mode);
-        Serial.print(F(" mT:"));
-        Serial.print(this->mode->maxTime);
-        Serial.print(F(" sV:"));
-        Serial.print(this->mode->setVolt);
-        Serial.print(F(" sA:"));
-        Serial.print(this->mode->setLoad);
-        Serial.print(F(" mV:"));
-        Serial.print(this->mode->maxVolt);
-        Serial.print(F(" mA:"));
-        Serial.print(this->mode->maxLoad);
-        Serial.print(F(" Nm:"));
-        Serial.print(this->mode->pgmName);
-        Serial.println();
-        delay(300);
-#endif
 
     }
 
@@ -221,7 +189,39 @@ public:
     void charge(uint16_t offset) {
         calculate(offset);
         control();
-        measure();
+    //        if (mode) {
+    //#ifdef DEBUG
+    //            Serial.print(F("Mode: "));
+    //                Serial.print(mode);
+    //                Serial.print(F(" mT:"));
+    //                Serial.print(this->mode->maxTime);
+    //                Serial.print(F(" sV:"));
+    //                Serial.print(this->mode->setVolt);
+    //                Serial.print(F(" sA:"));
+    //                Serial.print(this->mode->setLoad);
+    //                Serial.print(F(" mV:"));
+    //                Serial.print(this->mode->maxVolt);
+    //                Serial.print(F(" mA:"));
+    //                Serial.print(this->mode->maxLoad);
+    //                Serial.print(F(" Nm:"));
+    //                Serial.print(this->mode->pgmName);
+    //                Serial.println();
+    //                delay(300);
+    //#endif
+    //        }
+    }
+
+    void measure() {
+
+        const uint8_t reads = 4;
+        unsigned long vlt = 0, amp = 0;
+        for (offsetFor = 0; offsetFor < reads; ++offsetFor) {
+            vlt += analogRead(PIN_VOLT);
+            amp += analogRead(PIN_LOAD);
+        }
+
+        readContainerVlt = vlt / (reads - 1) + readContainerVlt;
+        readContainerAmp = amp / (reads - 1) + readContainerAmp;
     }
 
     uiData *getData() {
