@@ -6,13 +6,6 @@
 #define SmartCharger_h
 
 #include <Arduino.h>
-#include <PID_v1.h>
-
-#ifndef PID_v1_h
-
-#include "../../libraries/PID/PID_v1.h"
-
-#endif
 
 #include "../ChargeMode.h"
 

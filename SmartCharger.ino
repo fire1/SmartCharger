@@ -25,9 +25,9 @@
 
 #include "ChargeMode.h"
 
-const uint8_t encoderPinA = 8;
-const uint8_t encoderPinB = 7;
-const uint8_t encoderPinC = 6;
+const uint8_t encoderPinA = 3;
+const uint8_t encoderPinB = 1;
+const uint8_t encoderPinC = 4;
 
 SmartCharger smc;
 ButtonsDriver btn;
@@ -36,7 +36,7 @@ MenuStructure mn;
 const Button btnSet = {encoderPinC, LOW, 50};
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(9600);
 
     mn.begin();
     ui.begin();
