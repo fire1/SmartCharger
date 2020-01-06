@@ -6,7 +6,7 @@
 #define SMART_CHARGER_CHARGE_MODE_H
 
 #include <Arduino.h>
-#include "lib/ProgramMem.h"
+#include "ProgramMem.h"
 
 struct chargeMode {
     uint8_t maxTime;
