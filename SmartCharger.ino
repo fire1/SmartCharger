@@ -3,6 +3,7 @@
 
 #define DEBUG
 
+
 #define VERSION 1
 
 #ifndef _U8G2LIB_HH
@@ -11,29 +12,27 @@
 
 #endif
 
+#include "SmartCharger.h"
+
 
 #define BTN_MAX 1
 #define BTN_BOUNCE_TIME 300
 
 #include <Wire.h>
-#include "lib/SmartCharger.h"
+#include "lib/PowerControl.h"
 #include "lan/en.h"
 #include "lib/Language.h"
 
 #include "lib/ButtonsDriver.h"
 #include "lib/MenuStructure.h"
+#include "lib/PowerControl.h"
+#include "lib/ChargeMode.h"
 
-#include "ChargeMode.h"
-
-const uint8_t encoderPinA = 3;
-const uint8_t encoderPinB = 1;
-const uint8_t encoderPinC = 4;
-
-SmartCharger smc;
+PowerControl smc;
 ButtonsDriver btn;
 UserInterface ui;
 MenuStructure mn;
-const Button btnSet = {encoderPinC, LOW, 50};
+const Button btnSet = {pinEncoderC, LOW, 50};
 
 void setup() {
     Serial.begin(9600);
@@ -42,10 +41,15 @@ void setup() {
     ui.begin();
     smc.begin();
     btn.set(btnSet);
-    btn.setEncoder(encoderPinA, encoderPinB, 10);
+    btn.setEncoder(pinEncoderA, pinEncoderB, 10);
+    tone(pinTone, 2000);
     delay(150);
-    pinMode(encoderPinC, INPUT_PULLUP);
-    digitalWrite(encoderPinC, HIGH);
+    tone(pinTone, 2400);
+    delay(150);
+    noTone(pinTone);
+
+    pinMode(pinEncoderC, INPUT_PULLUP);
+    digitalWrite(pinEncoderC, HIGH);
 }
 
 volatile uint16_t offsetMainLoop;

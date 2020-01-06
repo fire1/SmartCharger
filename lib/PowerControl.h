@@ -2,41 +2,14 @@
 // Created by Angel Zaprianov on 2019-04-16.
 //
 
-#ifndef SmartCharger_h
-#define SmartCharger_h
+#ifndef PowerControl_h
+#define PowerControl_h
 
 #include <Arduino.h>
+#include "ChargeMode.h"
+#include "../SmartCharger.h"
 
-#include "../ChargeMode.h"
-
-#ifndef PIN_INP_AMP
-#define  PIN_INP_AMP A0
-#endif
-#ifndef PIN_INP_VLT
-#define PIN_INP_VLT A1
-#endif
-
-#ifndef PIN_PSV_PWM
-#define PIN_PSV_PWM 9
-#endif
-
-#ifndef PIN_GND_PWM
-#define  PIN_GND_PWM 10
-#endif
-
-#define PIN_VOLT A2
-#define PIN_LOAD A0
-
-
-struct uiData {
-    float volt;
-    float load;
-    uint8_t step;
-    uint8_t error;
-};
-
-
-class SmartCharger {
+class PowerControl {
 private:
     boolean started = false;
     const uint8_t readsPinsNum = 4;
@@ -52,14 +25,8 @@ private:
  *
  */
     void timers() {
-        TCCR2B = TCCR2B & B11111000 | B00000001; // D3 for PWM frequency of 31372.55 Hz
-//    TCCR1B = TCCR1B & B11111000 | B00000001; // D9 & D10: set timer 1 divisor to 1 for PWM frequency of 31372.55 Hz
-//    TCCR1B = TCCR1B & B11111000 | B00000010; // for PWM frequency of 3921.16 Hz
-        TCCR2B = TCCR2B & B11111000 | B00000011; // for PWM frequency of 980.39 Hz
-//    TCCR2B = TCCR2B & B11111000 | B00000100; // for PWM frequency of 490.20 Hz (The DEFAULT)
-//    TCCR2B = TCCR2B & B11111000 | B00000101; // for PWM frequency of 245.10 Hz
-//    TCCR2B = TCCR2B & B11111000 | B00000110; // for PWM frequency of 122.55 Hz
-//    TCCR2B = TCCR2B & B11111000 | B00000111; // for PWM frequency of 30.64 Hz
+        // Pin 9/10 timer setup
+        TCCR1B = TCCR1B & B11111000 | B00000010;    // set timer 1 divisor to     8 for PWM frequency of  3921.16 Hz
     }
 
 
@@ -93,15 +60,14 @@ private:
 
 
 
-            analogWrite(PIN_PSV_PWM, setVolt);
-            analogWrite(PIN_GND_PWM, 255);
+            analogWrite(pinPwmVolt, setVolt);
         }
     }
 
 
 public:
 
-    SmartCharger() {
+    PowerControl() {
 
     }
 
@@ -117,13 +83,11 @@ public:
 
     void begin() {
         timers();
-        pinMode(PIN_PSV_PWM, OUTPUT);
-        pinMode(PIN_GND_PWM, OUTPUT);
+        pinMode(pinPwmVolt, OUTPUT);
 
-        pinMode(PIN_LOAD, INPUT_PULLUP);
-        pinMode(PIN_VOLT, INPUT_PULLUP);
+        pinMode(pinInpAmps, INPUT_PULLUP);
+        pinMode(pinInpVolt, INPUT_PULLUP);
 
-        digitalWrite(PIN_LOAD, HIGH);
     }
 
 /**
@@ -187,8 +151,8 @@ public:
 
         vltInputRead = 0, ampInputRead = 0;
         for (offsetFor = 0; offsetFor < readsPinsNum; ++offsetFor) {
-            vltInputRead += analogRead(PIN_VOLT);
-            ampInputRead += analogRead(PIN_LOAD);
+            vltInputRead += analogRead(pinInpVolt);
+            ampInputRead += analogRead(pinInpAmps);
         }
 
         this->readContainerVlt = vltInputRead / (readsPinsNum - 1) + this->readContainerVlt;

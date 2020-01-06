@@ -7,7 +7,7 @@
 
 #include <U8g2lib.h>
 #include "Language.h"
-#include "SmartCharger.h"
+#include "PowerControl.h"
 
 #ifndef _U8G2LIB_HH
 
@@ -110,7 +110,7 @@ public:
  * Draws UI on screen
  * @param smartCharger
  */
-    void draw(SmartCharger *smartCharger) {
+    void draw(PowerControl *smartCharger) {
 
         u8g2.clearBuffer();
         u8g2.firstPage();
@@ -120,7 +120,7 @@ public:
     }
 
 protected:
-    void ui(SmartCharger *smartCharger) {
+    void ui(PowerControl *smartCharger) {
         switch (sector) {
             default:
             case 0:
