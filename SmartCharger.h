@@ -16,8 +16,8 @@ struct uiData {
 
 const uint8_t pinInpVolt = A2;
 const uint8_t pinInpAmps = A3;
-const uint8_t pinPwmVolt = 9;
-const uint8_t pinEncoderA = 2;
+const uint8_t pinPwmVolt = 10;
+const uint8_t pinEncoderA = 4;
 const uint8_t pinEncoderB = 3;
 const uint8_t pinEncoderC = 2;
 const uint8_t pinTone = 11;
